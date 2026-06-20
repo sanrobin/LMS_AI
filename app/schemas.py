@@ -47,6 +47,7 @@ class BookCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=200)
     author: str = Field(..., min_length=1, max_length=150)
     isbn: Optional[str] = Field(None, max_length=13)
+    genre: Optional[str] = Field(None, max_length=100)
 
 
 class BookUpdate(BaseModel):
@@ -54,6 +55,7 @@ class BookUpdate(BaseModel):
     title: Optional[str] = Field(None, max_length=200)
     author: Optional[str] = Field(None, max_length=150)
     isbn: Optional[str] = Field(None, max_length=13)
+    genre: Optional[str] = Field(None, max_length=100)
 
 
 class BookResponse(BaseModel):
@@ -62,6 +64,7 @@ class BookResponse(BaseModel):
     title: str
     author: str
     isbn: Optional[str] = None
+    genre: Optional[str] = None
     status: str
     borrowed_by: Optional[int] = None
     borrowed_date: Optional[datetime] = None
@@ -89,7 +92,7 @@ class LocationUpdate(BaseModel):
 
 class LocationResponse(BaseModel):
     """Location data from CSV."""
-    book_id: int
+    genre: str
     x_coord: float
     y_coord: float
     shelf_name: str

@@ -11,6 +11,8 @@ const LibrarianDashboard = {
   circulation: [],
   currentTab: 'books',
   editingBookId: null,
+  map: null,
+  locationMarker: null,
 
   /**
    * Initialize the librarian dashboard.
@@ -31,6 +33,9 @@ const LibrarianDashboard = {
     // Load initial data
     await this.loadBooks();
     await this.loadCirculation();
+
+    // Initialize map
+    this.initMap();
 
     // Bind book form
     const bookForm = document.getElementById('book-form');
@@ -83,7 +88,6 @@ const LibrarianDashboard = {
       this.books = await App.api(url);
       this.renderBookTable();
       this.updateStats();
-      this.populateBookSelect();
     } catch (err) {
       console.error('Failed to load books:', err);
     }
@@ -106,6 +110,7 @@ const LibrarianDashboard = {
       <tr>
         <td style="font-weight: 600; color: var(--text-primary);">${this.escapeHtml(book.title)}</td>
         <td>${this.escapeHtml(book.author)}</td>
+        <td>${this.escapeHtml(book.genre || '—')}</td>
         <td><code style="font-size: 0.8rem; color: var(--text-muted);">${book.isbn || '—'}</code></td>
         <td>${App.statusBadge(book.status)}</td>
         <td>${book.borrowed_date ? App.formatDate(book.borrowed_date) : '—'}</td>
@@ -133,6 +138,7 @@ const LibrarianDashboard = {
     const title = document.getElementById('modal-title');
     const titleInput = document.getElementById('book-title');
     const authorInput = document.getElementById('book-author');
+    const genreInput = document.getElementById('book-genre');
     const isbnInput = document.getElementById('book-isbn');
     const submitBtn = document.getElementById('book-submit-btn');
 
@@ -140,12 +146,14 @@ const LibrarianDashboard = {
       title.textContent = 'Edit Book';
       titleInput.value = book.title;
       authorInput.value = book.author;
+      genreInput.value = book.genre || '';
       isbnInput.value = book.isbn || '';
       submitBtn.textContent = 'Update Book';
     } else {
       title.textContent = 'Add New Book';
       titleInput.value = '';
       authorInput.value = '';
+      genreInput.value = '';
       isbnInput.value = '';
       submitBtn.textContent = 'Add Book';
     }
@@ -165,6 +173,7 @@ const LibrarianDashboard = {
     const data = {
       title: document.getElementById('book-title').value.trim(),
       author: document.getElementById('book-author').value.trim(),
+      genre: document.getElementById('book-genre').value.trim(),
       isbn: document.getElementById('book-isbn').value.trim() || null,
     };
 
@@ -213,45 +222,79 @@ const LibrarianDashboard = {
 
   // ── Location Management ─────────────────────────────────────
 
-  /**
-   * Populate the book dropdown in the location form.
-   */
-  populateBookSelect() {
-    const select = document.getElementById('loc-book-select');
-    if (!select) return;
+  initMap() {
+    const imgWidth = 1000;
+    const imgHeight = 700;
+    const bounds = [[0, 0], [imgHeight, imgWidth]];
 
-    select.innerHTML = '<option value="">Select a book...</option>' +
-      this.books.map(b => `<option value="${b.id}">${b.title} (ID: ${b.id})</option>`).join('');
+    this.map = L.map('librarian-map', {
+      crs: L.CRS.Simple,
+      minZoom: -1,
+      maxZoom: 2,
+      zoomControl: true,
+      attributionControl: false,
+    });
+
+    L.imageOverlay('/static/img/floorplan.png', bounds).addTo(this.map);
+    this.map.fitBounds(bounds);
+    this.map.setView([imgHeight / 2, imgWidth / 2], 0);
+
+    // Handle clicks to set coordinates
+    this.map.on('click', (e) => {
+      const y = Math.round(e.latlng.lat);
+      const x = Math.round(e.latlng.lng);
+      
+      // Ensure within bounds
+      if (x >= 0 && x <= imgWidth && y >= 0 && y <= imgHeight) {
+        document.getElementById('loc-x').value = x;
+        document.getElementById('loc-y').value = y;
+        this.updateLocationMarker(x, y);
+      }
+    });
+  },
+
+  updateLocationMarker(x, y) {
+    if (this.locationMarker) {
+      this.locationMarker.setLatLng([y, x]);
+    } else {
+      const icon = L.divIcon({
+        className: 'custom-pin',
+        html: `<span>📍</span>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 28],
+      });
+      this.locationMarker = L.marker([y, x], { icon }).addTo(this.map);
+    }
   },
 
   /**
-   * Load existing location for selected book.
+   * Load existing location for entered genre.
    */
-  async onBookSelectChange() {
-    const bookId = document.getElementById('loc-book-select').value;
-    if (!bookId) return;
+  async onGenreChange() {
+    const genre = document.getElementById('loc-genre').value.trim();
+    if (!genre) return;
 
     try {
-      const loc = await App.api(`/api/locations/${bookId}`);
+      const loc = await App.api(`/api/locations/${encodeURIComponent(genre)}`);
       if (loc) {
         document.getElementById('loc-x').value = loc.x_coord;
         document.getElementById('loc-y').value = loc.y_coord;
         document.getElementById('loc-shelf').value = loc.shelf_name;
+        this.updateLocationMarker(loc.x_coord, loc.y_coord);
+        this.map.setView([loc.y_coord, loc.x_coord], 1, { animate: true });
       }
     } catch {
-      // No existing location — clear fields
-      document.getElementById('loc-x').value = '';
-      document.getElementById('loc-y').value = '';
-      document.getElementById('loc-shelf').value = '';
+      // No existing location — keep coordinates as is, let user set new ones
+      // We don't clear X/Y here because the user might have clicked the map first
     }
   },
 
   async handleLocationSubmit(e) {
     e.preventDefault();
 
-    const bookId = document.getElementById('loc-book-select').value;
-    if (!bookId) {
-      App.toast('Please select a book first.', 'error');
+    const genre = document.getElementById('loc-genre').value.trim();
+    if (!genre) {
+      App.toast('Please enter a genre first.', 'error');
       return;
     }
 
@@ -267,7 +310,7 @@ const LibrarianDashboard = {
     }
 
     try {
-      await App.api(`/api/locations/${bookId}`, {
+      await App.api(`/api/locations/${encodeURIComponent(genre)}`, {
         method: 'PUT',
         body: JSON.stringify(data),
       });

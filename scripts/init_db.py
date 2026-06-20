@@ -66,26 +66,26 @@ def seed_books(db):
     print("\n📚 Seeding books...")
 
     books_data = [
-        {"title": "Introduction to Algorithms", "author": "Thomas H. Cormen", "isbn": "9780262033848"},
-        {"title": "Clean Code", "author": "Robert C. Martin", "isbn": "9780132350884"},
-        {"title": "The Pragmatic Programmer", "author": "David Thomas & Andrew Hunt", "isbn": "9780135957059"},
-        {"title": "Design Patterns", "author": "Erich Gamma et al.", "isbn": "9780201633610"},
-        {"title": "Python Crash Course", "author": "Eric Matthes", "isbn": "9781593279288"},
-        {"title": "Artificial Intelligence: A Modern Approach", "author": "Stuart Russell & Peter Norvig", "isbn": "9780134610993"},
-        {"title": "The Art of Computer Programming", "author": "Donald Knuth", "isbn": "9780201896831"},
-        {"title": "Structure and Interpretation of Computer Programs", "author": "Harold Abelson & Gerald Sussman", "isbn": "9780262510875"},
-        {"title": "Database System Concepts", "author": "Abraham Silberschatz", "isbn": "9780078022159"},
-        {"title": "Computer Networking: A Top-Down Approach", "author": "James Kurose & Keith Ross", "isbn": "9780133594140"},
-        {"title": "Operating System Concepts", "author": "Abraham Silberschatz", "isbn": "9781118063330"},
-        {"title": "Digital Design and Computer Architecture", "author": "David Harris & Sarah Harris", "isbn": "9780123944245"},
-        {"title": "Discrete Mathematics and Its Applications", "author": "Kenneth Rosen", "isbn": "9780073383095"},
-        {"title": "Linear Algebra and Its Applications", "author": "David C. Lay", "isbn": "9780321982384"},
-        {"title": "Calculus: Early Transcendentals", "author": "James Stewart", "isbn": "9781285741550"},
-        {"title": "To Kill a Mockingbird", "author": "Harper Lee", "isbn": "9780061120084"},
-        {"title": "1984", "author": "George Orwell", "isbn": "9780451524935"},
-        {"title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "isbn": "9780743273565"},
-        {"title": "Pride and Prejudice", "author": "Jane Austen", "isbn": "9780141439518"},
-        {"title": "Sapiens: A Brief History of Humankind", "author": "Yuval Noah Harari", "isbn": "9780062316097"},
+        {"title": "Introduction to Algorithms", "author": "Thomas H. Cormen", "isbn": "9780262033848", "genre": "Computer Science"},
+        {"title": "Clean Code", "author": "Robert C. Martin", "isbn": "9780132350884", "genre": "Programming"},
+        {"title": "The Pragmatic Programmer", "author": "David Thomas & Andrew Hunt", "isbn": "9780135957059", "genre": "Programming"},
+        {"title": "Design Patterns", "author": "Erich Gamma et al.", "isbn": "9780201633610", "genre": "Programming"},
+        {"title": "Python Crash Course", "author": "Eric Matthes", "isbn": "9781593279288", "genre": "Programming"},
+        {"title": "Artificial Intelligence: A Modern Approach", "author": "Stuart Russell & Peter Norvig", "isbn": "9780134610993", "genre": "Computer Science"},
+        {"title": "The Art of Computer Programming", "author": "Donald Knuth", "isbn": "9780201896831", "genre": "Computer Science"},
+        {"title": "Structure and Interpretation of Computer Programs", "author": "Harold Abelson & Gerald Sussman", "isbn": "9780262510875", "genre": "Computer Science"},
+        {"title": "Database System Concepts", "author": "Abraham Silberschatz", "isbn": "9780078022159", "genre": "Databases & Networks"},
+        {"title": "Computer Networking: A Top-Down Approach", "author": "James Kurose & Keith Ross", "isbn": "9780133594140", "genre": "Databases & Networks"},
+        {"title": "Operating System Concepts", "author": "Abraham Silberschatz", "isbn": "9781118063330", "genre": "Computer Science"},
+        {"title": "Digital Design and Computer Architecture", "author": "David Harris & Sarah Harris", "isbn": "9780123944245", "genre": "Computer Science"},
+        {"title": "Discrete Mathematics and Its Applications", "author": "Kenneth Rosen", "isbn": "9780073383095", "genre": "Mathematics"},
+        {"title": "Linear Algebra and Its Applications", "author": "David C. Lay", "isbn": "9780321982384", "genre": "Mathematics"},
+        {"title": "Calculus: Early Transcendentals", "author": "James Stewart", "isbn": "9781285741550", "genre": "Mathematics"},
+        {"title": "To Kill a Mockingbird", "author": "Harper Lee", "isbn": "9780061120084", "genre": "Literature"},
+        {"title": "1984", "author": "George Orwell", "isbn": "9780451524935", "genre": "Literature"},
+        {"title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "isbn": "9780743273565", "genre": "Literature"},
+        {"title": "Pride and Prejudice", "author": "Jane Austen", "isbn": "9780141439518", "genre": "Literature"},
+        {"title": "Sapiens: A Brief History of Humankind", "author": "Yuval Noah Harari", "isbn": "9780062316097", "genre": "Non-Fiction"},
     ]
 
     for bdata in books_data:
@@ -107,31 +107,17 @@ def seed_locations():
     # Locations mapped to a 1000x700 pixel floorplan image
     # Organized by shelf sections of a typical library
     locations = [
-        (1, 120, 150, "Shelf A1 - Computer Science"),
-        (2, 120, 200, "Shelf A1 - Computer Science"),
-        (3, 120, 250, "Shelf A1 - Computer Science"),
-        (4, 120, 300, "Shelf A1 - Computer Science"),
-        (5, 280, 150, "Shelf A2 - Programming"),
-        (6, 280, 200, "Shelf A2 - Programming"),
-        (7, 280, 250, "Shelf A2 - Programming"),
-        (8, 280, 300, "Shelf A2 - Programming"),
-        (9, 450, 150, "Shelf B1 - Databases & Networks"),
-        (10, 450, 200, "Shelf B1 - Databases & Networks"),
-        (11, 450, 250, "Shelf B1 - Databases & Networks"),
-        (12, 450, 300, "Shelf B1 - Databases & Networks"),
-        (13, 620, 150, "Shelf C1 - Mathematics"),
-        (14, 620, 200, "Shelf C1 - Mathematics"),
-        (15, 620, 250, "Shelf C1 - Mathematics"),
-        (16, 780, 150, "Shelf D1 - Literature"),
-        (17, 780, 200, "Shelf D1 - Literature"),
-        (18, 780, 250, "Shelf D1 - Literature"),
-        (19, 780, 300, "Shelf D1 - Literature"),
-        (20, 450, 500, "Shelf E1 - Non-Fiction"),
+        ("Computer Science", 120, 200, "Shelf A1 - Computer Science"),
+        ("Programming", 280, 200, "Shelf A2 - Programming"),
+        ("Databases & Networks", 450, 200, "Shelf B1 - Databases & Networks"),
+        ("Mathematics", 620, 200, "Shelf C1 - Mathematics"),
+        ("Literature", 780, 200, "Shelf D1 - Literature"),
+        ("Non-Fiction", 450, 500, "Shelf E1 - Non-Fiction"),
     ]
 
-    for book_id, x, y, shelf in locations:
-        upsert_location(book_id, x, y, shelf)
-        print(f"   + Book {book_id} → ({x}, {y}) @ {shelf}")
+    for genre, x, y, shelf in locations:
+        upsert_location(genre, x, y, shelf)
+        print(f"   + Genre {genre} → ({x}, {y}) @ {shelf}")
 
     print("✅ Locations CSV updated.\n")
 

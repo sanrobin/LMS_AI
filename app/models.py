@@ -61,6 +61,7 @@ class Book(Base):
     title = Column(String(200), nullable=False, index=True)
     author = Column(String(150), nullable=False, index=True)
     isbn = Column(String(13), unique=True, nullable=True)
+    genre = Column(String(100), nullable=True, index=True)
     status = Column(SAEnum(BookStatus), default=BookStatus.available, nullable=False)
     borrowed_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     borrowed_date = Column(DateTime, nullable=True)

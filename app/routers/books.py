@@ -61,7 +61,10 @@ def get_book(
         raise HTTPException(status_code=404, detail="Book not found.")
 
     # Enrich with location data from CSV
-    location = csv_service.get_location(book_id)
+    location = None
+    if book.genre:
+        location = csv_service.get_location(book.genre)
+    
     borrower_name = book.borrower.username if book.borrower else None
 
     response = BookDetailResponse(
@@ -69,6 +72,7 @@ def get_book(
         title=book.title,
         author=book.author,
         isbn=book.isbn,
+        genre=book.genre,
         status=book.status.value,
         borrowed_by=book.borrowed_by,
         borrowed_date=book.borrowed_date,
@@ -101,6 +105,7 @@ def create_book(
         title=data.title,
         author=data.author,
         isbn=data.isbn,
+        genre=data.genre,
         status=BookStatus.available,
     )
     db.add(book)
@@ -134,6 +139,8 @@ def update_book(
                 detail=f"A book with ISBN {data.isbn} already exists.",
             )
         book.isbn = data.isbn
+    if data.genre is not None:
+        book.genre = data.genre
 
     db.commit()
     db.refresh(book)
@@ -157,8 +164,7 @@ def delete_book(
             detail="Cannot delete a book that is currently borrowed. Return it first.",
         )
 
-    # Remove location from CSV
-    csv_service.delete_location(book_id)
+    # Note: We do not remove the location from CSV because locations are tied to genres, not individual books.
 
     db.delete(book)
     db.commit()

@@ -1246,3 +1246,33 @@ tr.row-overdue {
 tr.row-overdue:hover {
   background: rgba(247, 37, 133, 0.08) !important;
 }
+
+/* ── Map Pins ────────────────────────────────────────────────── */
+.custom-pin {
+  width: 28px;
+  height: 28px;
+  background: var(--accent-blue);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.custom-pin span {
+  transform: rotate(45deg);
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.highlighted-pin {
+  background: var(--accent-coral) !important;
+  transform: scale(1.3) rotate(-45deg) !important;
+  box-shadow: 0 0 15px var(--accent-coral) !important;
+  z-index: 1000 !important;
+}

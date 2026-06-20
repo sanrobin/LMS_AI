@@ -2,7 +2,7 @@
 CSV service for managing book locations (locations.csv).
 Provides thread-safe CRUD operations over the flat file.
 
-Schema: book_id, x_coord, y_coord, shelf_name
+Schema: genre, x_coord, y_coord, shelf_name
 """
 
 import csv
@@ -22,7 +22,7 @@ def _ensure_csv_exists():
         LOCATIONS_CSV.parent.mkdir(parents=True, exist_ok=True)
         with open(LOCATIONS_CSV, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
-            writer.writerow(["book_id", "x_coord", "y_coord", "shelf_name"])
+            writer.writerow(["genre", "x_coord", "y_coord", "shelf_name"])
 
 
 def get_all_locations() -> list[dict]:
@@ -30,14 +30,14 @@ def get_all_locations() -> list[dict]:
     Read all book locations from CSV.
     
     Returns:
-        List of dicts with keys: book_id, x_coord, y_coord, shelf_name
+        List of dicts with keys: genre, x_coord, y_coord, shelf_name
     """
     _ensure_csv_exists()
     with open(LOCATIONS_CSV, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         return [
             {
-                "book_id": int(row["book_id"]),
+                "genre": row["genre"],
                 "x_coord": float(row["x_coord"]),
                 "y_coord": float(row["y_coord"]),
                 "shelf_name": row["shelf_name"].strip(),
@@ -46,24 +46,24 @@ def get_all_locations() -> list[dict]:
         ]
 
 
-def get_location(book_id: int) -> Optional[dict]:
+def get_location(genre: str) -> Optional[dict]:
     """
-    Get location data for a specific book.
+    Get location data for a specific genre.
     
     Returns:
         Location dict or None if not found.
     """
     locations = get_all_locations()
     for loc in locations:
-        if loc["book_id"] == book_id:
+        if loc["genre"] == genre:
             return loc
     return None
 
 
-def upsert_location(book_id: int, x_coord: float, y_coord: float, shelf_name: str) -> dict:
+def upsert_location(genre: str, x_coord: float, y_coord: float, shelf_name: str) -> dict:
     """
-    Add or update a book's location in the CSV.
-    If book_id exists, updates the row. Otherwise, appends a new row.
+    Add or update a genre's location in the CSV.
+    If genre exists, updates the row. Otherwise, appends a new row.
     
     Thread-safe via file lock.
     """
@@ -74,7 +74,7 @@ def upsert_location(book_id: int, x_coord: float, y_coord: float, shelf_name: st
         # Update existing or append new
         updated = False
         for loc in locations:
-            if loc["book_id"] == book_id:
+            if loc["genre"] == genre:
                 loc["x_coord"] = x_coord
                 loc["y_coord"] = y_coord
                 loc["shelf_name"] = shelf_name
@@ -83,7 +83,7 @@ def upsert_location(book_id: int, x_coord: float, y_coord: float, shelf_name: st
 
         if not updated:
             locations.append({
-                "book_id": book_id,
+                "genre": genre,
                 "x_coord": x_coord,
                 "y_coord": y_coord,
                 "shelf_name": shelf_name,
@@ -92,12 +92,12 @@ def upsert_location(book_id: int, x_coord: float, y_coord: float, shelf_name: st
         # Write entire file back
         _write_all(locations)
 
-        return {"book_id": book_id, "x_coord": x_coord, "y_coord": y_coord, "shelf_name": shelf_name}
+        return {"genre": genre, "x_coord": x_coord, "y_coord": y_coord, "shelf_name": shelf_name}
 
 
-def delete_location(book_id: int) -> bool:
+def delete_location(genre: str) -> bool:
     """
-    Remove a book's location entry from the CSV.
+    Remove a genre's location entry from the CSV.
     
     Returns:
         True if the entry was found and removed, False otherwise.
@@ -106,7 +106,7 @@ def delete_location(book_id: int) -> bool:
         _ensure_csv_exists()
         locations = get_all_locations()
         original_count = len(locations)
-        locations = [loc for loc in locations if loc["book_id"] != book_id]
+        locations = [loc for loc in locations if loc["genre"] != genre]
 
         if len(locations) == original_count:
             return False  # Nothing was deleted
@@ -119,6 +119,6 @@ def _write_all(locations: list[dict]):
     """Write the full location list back to CSV (internal helper)."""
     with open(LOCATIONS_CSV, "w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["book_id", "x_coord", "y_coord", "shelf_name"])
+        writer.writerow(["genre", "x_coord", "y_coord", "shelf_name"])
         for loc in locations:
-            writer.writerow([loc["book_id"], loc["x_coord"], loc["y_coord"], loc["shelf_name"]])
+            writer.writerow([loc["genre"], loc["x_coord"], loc["y_coord"], loc["shelf_name"]])

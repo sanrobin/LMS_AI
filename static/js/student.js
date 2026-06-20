@@ -110,7 +110,10 @@ const StudentDashboard = {
     grid.innerHTML = books.map(book => `
       <div class="glass-card book-card" data-book-id="${book.id}" onclick="StudentDashboard.selectBook(${book.id})">
         <div class="book-title">${this.escapeHtml(book.title)}</div>
-        <div class="book-author">by ${this.escapeHtml(book.author)}</div>
+        <div class="book-author" style="margin-bottom: 2px;">by ${this.escapeHtml(book.author)}</div>
+        <div style="font-size: 0.8rem; color: var(--accent-blue); margin-bottom: 8px; font-weight: 500;">
+          ${this.escapeHtml(book.genre || 'Uncategorized')}
+        </div>
         <div class="book-meta">
           ${App.statusBadge(book.status)}
           ${book.isbn ? `<span class="book-isbn">${book.isbn}</span>` : ''}
@@ -163,7 +166,11 @@ const StudentDashboard = {
     try {
       const book = await App.api(`/api/books/${bookId}`);
       if (book) {
-        LibraryMap.highlightBook(bookId, book.title, book.author, book.shelf_name);
+        if (book.genre) {
+          LibraryMap.highlightGenre(book.genre, book.title, book.author, book.shelf_name);
+        } else {
+          App.toast('This book does not have an assigned genre location.', 'info');
+        }
 
         // Scroll to map
         const mapEl = document.getElementById('library-map');

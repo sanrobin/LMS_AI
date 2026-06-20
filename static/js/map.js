@@ -7,7 +7,7 @@
 
 const LibraryMap = {
   map: null,
-  markers: {},       // book_id → marker
+  markers: {},       // genre → marker
   allLocations: [],
 
   /**
@@ -53,7 +53,7 @@ const LibraryMap = {
 
   /**
    * Render pin markers for a list of locations.
-   * @param {Array} locations - Array of {book_id, x_coord, y_coord, shelf_name}
+   * @param {Array} locations - Array of {genre, x_coord, y_coord, shelf_name}
    */
   renderMarkers(locations) {
     // Clear existing markers
@@ -63,7 +63,7 @@ const LibraryMap = {
     locations.forEach(loc => {
       const icon = L.divIcon({
         className: 'custom-pin',
-        html: `<span>${loc.book_id}</span>`,
+        html: `<span>${loc.genre.charAt(0).toUpperCase()}</span>`,
         iconSize: [28, 28],
         iconAnchor: [14, 28],
         popupAnchor: [0, -30],
@@ -73,15 +73,15 @@ const LibraryMap = {
       const marker = L.marker([loc.y_coord, loc.x_coord], { icon })
         .addTo(this.map);
 
-      // Popup with book info (will be enriched when a book is selected)
+      // Popup with genre info (will be enriched when a book is selected)
       marker.bindPopup(`
         <div style="min-width: 150px;">
-          <strong>Book #${loc.book_id}</strong><br>
+          <strong>Genre: ${loc.genre}</strong><br>
           <span style="color: #9a9ab0; font-size: 0.8rem;">📍 ${loc.shelf_name}</span>
         </div>
       `);
 
-      this.markers[loc.book_id] = marker;
+      this.markers[loc.genre] = marker;
     });
   },
 
@@ -89,10 +89,10 @@ const LibraryMap = {
    * Highlight a specific book on the map.
    * Zooms to it and opens its popup with detailed info.
    */
-  highlightBook(bookId, bookTitle, bookAuthor, shelfName) {
-    const marker = this.markers[bookId];
+  highlightGenre(genre, bookTitle, bookAuthor, shelfName) {
+    const marker = this.markers[genre];
     if (!marker) {
-      App.toast('Location not available for this book.', 'info');
+      App.toast('Location not available for this genre.', 'info');
       return;
     }
 

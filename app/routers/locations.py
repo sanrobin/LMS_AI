@@ -20,30 +20,30 @@ def list_locations(_current_user: User = Depends(get_current_user)):
     return locations
 
 
-@router.get("/{book_id}", response_model=LocationResponse)
+@router.get("/{genre}", response_model=LocationResponse)
 def get_location(
-    book_id: int,
+    genre: str,
     _current_user: User = Depends(get_current_user),
 ):
-    """Get location data for a specific book."""
-    location = csv_service.get_location(book_id)
+    """Get location data for a specific genre."""
+    location = csv_service.get_location(genre)
     if not location:
-        raise HTTPException(status_code=404, detail="Location not found for this book.")
+        raise HTTPException(status_code=404, detail="Location not found for this genre.")
     return location
 
 
-@router.put("/{book_id}", response_model=LocationResponse)
+@router.put("/{genre}", response_model=LocationResponse)
 def upsert_location(
-    book_id: int,
+    genre: str,
     data: LocationUpdate,
     _librarian: User = Depends(require_role("librarian")),
 ):
     """
-    Add or update a book's map coordinates and shelf name (Librarian only).
-    If the book already has a location, it will be overwritten.
+    Add or update a genre's map coordinates and shelf name (Librarian only).
+    If the genre already has a location, it will be overwritten.
     """
     result = csv_service.upsert_location(
-        book_id=book_id,
+        genre=genre,
         x_coord=data.x_coord,
         y_coord=data.y_coord,
         shelf_name=data.shelf_name,
@@ -51,13 +51,13 @@ def upsert_location(
     return result
 
 
-@router.delete("/{book_id}", status_code=204)
+@router.delete("/{genre}", status_code=204)
 def delete_location(
-    book_id: int,
+    genre: str,
     _librarian: User = Depends(require_role("librarian")),
 ):
-    """Remove a book's location entry from CSV (Librarian only)."""
-    deleted = csv_service.delete_location(book_id)
+    """Remove a genre's location entry from CSV (Librarian only)."""
+    deleted = csv_service.delete_location(genre)
     if not deleted:
-        raise HTTPException(status_code=404, detail="Location not found for this book.")
+        raise HTTPException(status_code=404, detail="Location not found for this genre.")
     return None
