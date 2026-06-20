@@ -8,18 +8,20 @@
   <link rel="stylesheet" href="/static/css/styles.css">
   <!-- Leaflet.js CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
   <div class="dashboard">
     <!-- ─── Navbar ───────────────────────────────────────────── -->
     <nav class="navbar">
       <div class="navbar-brand">
-        <div class="logo-icon">📚</div>
+        <div class="logo-icon"><i data-lucide="book-open"></i></div>
         <span>Library</span>
       </div>
       <div class="navbar-links">
         <span class="user-badge" id="user-badge">Loading...</span>
-        <button onclick="App.logout()" title="Sign Out">🚪 Logout</button>
+        <button onclick="App.logout()" title="Sign Out" style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="log-out" width="16" height="16"></i> Logout</button>
       </div>
     </nav>
 
@@ -27,27 +29,27 @@
     <div class="dashboard-content">
       <!-- Header -->
       <div class="dashboard-header">
-        <h1>📖 Student Dashboard</h1>
+        <h1 style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="layout-dashboard"></i> Student Dashboard</h1>
       </div>
 
       <!-- Stats Row -->
       <div class="stats-row">
         <div class="glass-card stat-card">
-          <div class="stat-icon blue">📚</div>
+          <div class="stat-icon blue"><i data-lucide="book"></i></div>
           <div>
             <div class="stat-value" id="stat-total">—</div>
             <div class="stat-label">Total Books</div>
           </div>
         </div>
         <div class="glass-card stat-card">
-          <div class="stat-icon teal">✅</div>
+          <div class="stat-icon teal"><i data-lucide="check-circle"></i></div>
           <div>
             <div class="stat-value" id="stat-available">—</div>
             <div class="stat-label">Available</div>
           </div>
         </div>
         <div class="glass-card stat-card">
-          <div class="stat-icon violet">📖</div>
+          <div class="stat-icon violet"><i data-lucide="book-open"></i></div>
           <div>
             <div class="stat-value" id="stat-my-borrowed">—</div>
             <div class="stat-label">My Borrowed</div>
@@ -60,12 +62,12 @@
         <!-- Left: Search + Books -->
         <div>
           <div class="section-header">
-            <h2>🔍 Find Books</h2>
+            <h2 style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="search"></i> Find Books</h2>
           </div>
 
           <!-- Search Bar -->
           <div class="search-container" style="max-width: 100%; margin-bottom: 1rem;">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"><i data-lucide="search" width="18" height="18"></i></span>
             <input
               type="text"
               id="search-input"
@@ -83,16 +85,16 @@
         <!-- Right: Map -->
         <div>
           <div class="section-header">
-            <h2>🗺️ Library Map</h2>
-            <button class="btn btn-secondary btn-sm" onclick="LibraryMap.resetView()">
-              ↻ Reset View
+            <h2 style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="map"></i> Library Map</h2>
+            <button class="btn btn-secondary btn-sm" onclick="LibraryMap.resetView()" style="display: flex; align-items: center; gap: 0.25rem;">
+              <i data-lucide="refresh-cw" width="16" height="16"></i> Reset View
             </button>
           </div>
           <div class="map-container">
             <div id="library-map"></div>
           </div>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
-            💡 Click a book card to see its location on the map
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+            <i data-lucide="lightbulb" width="16" height="16"></i> Click a book card to see its location on the map
           </p>
         </div>
       </div>
@@ -100,7 +102,7 @@
       <!-- My Borrowed Books -->
       <div style="margin-bottom: 1.5rem;">
         <div class="section-header">
-          <h2>📖 My Borrowed Books</h2>
+          <h2 style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="book-open"></i> My Borrowed Books</h2>
         </div>
         <div id="my-books-list">
           <!-- Populated by JS -->
@@ -111,7 +113,7 @@
     <!-- ─── AI Chat Panel (Slide-out) ────────────────────────── -->
     <div class="chat-panel" id="chat-panel">
       <div class="chat-header">
-        <h3>🤖 AI Library Assistant</h3>
+        <h3 style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="bot"></i> AI Library Assistant</h3>
         <button class="modal-close" id="chat-close">✕</button>
       </div>
       <div class="chat-messages" id="chat-messages">
@@ -136,7 +138,7 @@
 
     <!-- Chat FAB -->
     <button class="chat-fab" id="chat-fab" title="AI Library Assistant">
-      🤖
+      <i data-lucide="message-square"></i>
     </button>
   </div>
 
@@ -146,5 +148,6 @@
   <script src="/static/js/map.js"></script>
   <script src="/static/js/chat.js"></script>
   <script src="/static/js/student.js"></script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>

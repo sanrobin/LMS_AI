@@ -61,29 +61,30 @@ const LibraryMap = {
     this.markers = {};
 
     locations.forEach(loc => {
+      // Create custom div icon
       const icon = L.divIcon({
         className: 'custom-pin',
-        html: `<span></span>`,
+        html: `<span><i data-lucide="map-pin" stroke="currentColor" fill="var(--bg-secondary)" width="24" height="24"></i></span>`,
         iconSize: [28, 28],
         iconAnchor: [14, 28],
-        popupAnchor: [0, -30],
-        tooltipAnchor: [0, -30],
+        tooltipAnchor: [0, -28],
       });
 
       // Note: Leaflet uses [lat, lng] which maps to [y, x] in pixel coords
-      const marker = L.marker([loc.y_coord, loc.x_coord], { icon })
-        .addTo(this.map);
+      const marker = L.marker([loc.y_coord, loc.x_coord], { icon }).addTo(this.map);
 
-      // Tooltip with genre info (shows on hover)
+      // Bind tooltip
       marker.bindTooltip(`
-        <div style="min-width: 150px;">
+        <div style="text-align: center; font-family: var(--font-main);">
           <strong>Genre: ${loc.genre}</strong><br>
-          <span style="color: #9a9ab0; font-size: 0.8rem;">📍 ${loc.shelf_name}</span>
+          <span style="color: #9a9ab0; font-size: 0.8rem; display:flex; align-items:center; justify-content:center; gap:0.25rem;"><i data-lucide="map-pin" width="12" height="12"></i> ${loc.shelf_name}</span>
         </div>
-      `, { direction: 'top', className: 'custom-tooltip' });
+      `, { direction: 'top', className: 'custom-tooltip', opacity: 0.9 });
 
       this.markers[loc.genre] = marker;
     });
+
+    setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 10);
   },
 
   /**

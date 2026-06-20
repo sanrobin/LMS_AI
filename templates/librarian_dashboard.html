@@ -8,18 +8,20 @@
   <link rel="stylesheet" href="/static/css/styles.css">
   <!-- Leaflet.js CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
   <div class="dashboard">
     <!-- ─── Navbar ───────────────────────────────────────────── -->
     <nav class="navbar">
       <div class="navbar-brand">
-        <div class="logo-icon">📚</div>
+        <div class="logo-icon"><i data-lucide="book-open"></i></div>
         <span>Library</span>
       </div>
       <div class="navbar-links">
         <span class="user-badge" id="user-badge">Loading...</span>
-        <button onclick="App.logout()" title="Sign Out">🚪 Logout</button>
+        <button onclick="App.logout()" title="Sign Out" style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="log-out" width="16" height="16"></i> Logout</button>
       </div>
     </nav>
 
@@ -27,34 +29,34 @@
     <div class="dashboard-content">
       <!-- Header -->
       <div class="dashboard-header">
-        <h1>🔑 Librarian Dashboard</h1>
+        <h1 style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="key"></i> Librarian Dashboard</h1>
       </div>
 
       <!-- Stats Row -->
       <div class="stats-row">
         <div class="glass-card stat-card">
-          <div class="stat-icon blue">📚</div>
+          <div class="stat-icon blue"><i data-lucide="book"></i></div>
           <div>
             <div class="stat-value" id="stat-total-books">—</div>
             <div class="stat-label">Total Books</div>
           </div>
         </div>
         <div class="glass-card stat-card">
-          <div class="stat-icon teal">✅</div>
+          <div class="stat-icon teal"><i data-lucide="check-circle"></i></div>
           <div>
             <div class="stat-value" id="stat-available-books">—</div>
             <div class="stat-label">Available</div>
           </div>
         </div>
         <div class="glass-card stat-card">
-          <div class="stat-icon violet">📖</div>
+          <div class="stat-icon violet"><i data-lucide="book-open"></i></div>
           <div>
             <div class="stat-value" id="stat-borrowed-books">—</div>
             <div class="stat-label">Borrowed</div>
           </div>
         </div>
         <div class="glass-card stat-card">
-          <div class="stat-icon coral">⚠️</div>
+          <div class="stat-icon coral"><i data-lucide="alert-triangle"></i></div>
           <div>
             <div class="stat-value" id="stat-overdue">—</div>
             <div class="stat-label">Overdue</div>
@@ -64,16 +66,16 @@
 
       <!-- Tabs -->
       <div class="tabs">
-        <button class="tab-btn active" data-tab="books">📚 Book Management</button>
-        <button class="tab-btn" data-tab="locations">🗺️ Map Management</button>
-        <button class="tab-btn" data-tab="circulation">📊 Circulation</button>
+        <button class="tab-btn active" data-tab="books" style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="book" width="16" height="16"></i> Book Management</button>
+        <button class="tab-btn" data-tab="locations" style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map" width="16" height="16"></i> Map Management</button>
+        <button class="tab-btn" data-tab="circulation" style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="bar-chart-2" width="16" height="16"></i> Circulation</button>
       </div>
 
       <!-- ─── Tab 1: Book Management ─────────────────────────── -->
       <div class="tab-panel active" id="tab-books">
         <div class="section-header">
           <div class="search-container">
-            <span class="search-icon">🔍</span>
+            <span class="search-icon"><i data-lucide="search" width="18" height="18"></i></span>
             <input
               type="text"
               id="lib-search-input"
@@ -113,7 +115,7 @@
         <div class="two-col">
           <!-- Location Form -->
           <div class="glass-card">
-            <h3 style="margin-bottom: 1.25rem;">📍 Update Book Location</h3>
+            <h3 style="margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="map-pin"></i> Update Book Location</h3>
             <form id="location-form">
               <div class="form-group">
                 <label class="form-label" for="loc-genre">Genre</label>
@@ -136,15 +138,15 @@
                 <input type="text" id="loc-shelf" class="form-input" placeholder="e.g. Shelf A1 - Computer Science" required>
               </div>
 
-              <button type="submit" class="btn btn-primary" style="width: 100%;">
-                💾 Save Location
+              <button type="submit" class="btn btn-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                <i data-lucide="save" width="16" height="16"></i> Save Location
               </button>
             </form>
           </div>
 
           <!-- Help / Info / Map -->
           <div class="glass-card">
-            <h3 style="margin-bottom: 1rem;">🗺️ Interactive Map</h3>
+            <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="map"></i> Interactive Map</h3>
             <div id="librarian-map" style="width: 100%; height: 350px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1rem;"></div>
             
             <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
@@ -157,19 +159,19 @@
             </ul>
 
             <div style="margin-top: 1rem; padding: 1rem; background: rgba(67, 97, 238, 0.08); border-radius: var(--radius-md); border: 1px solid rgba(67, 97, 238, 0.15);">
-              <p style="font-size: 0.85rem; color: var(--accent-blue);">
-                💡 <strong>Tip:</strong> Enter an existing genre to load its location, or click the map to place a new pin.
+              <p style="font-size: 0.85rem; color: var(--accent-blue); display: flex; align-items: center; gap: 0.25rem;">
+                <i data-lucide="lightbulb" width="16" height="16"></i> <strong>Tip:</strong> Enter an existing genre to load its location, or click the map to place a new pin.
               </p>
             </div>
 
             <div style="margin-top: 1rem;">
               <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-primary);">Shelf Layout Reference</h4>
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
-                <div>📍 A1-A2: X 100–300</div>
-                <div>📍 B1: X 400–500</div>
-                <div>📍 C1: X 550–700</div>
-                <div>📍 D1: X 700–900</div>
-                <div>📍 E1: X 400–500 (lower)</div>
+                <div style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map-pin" width="12" height="12"></i> A1-A2: X 100–300</div>
+                <div style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map-pin" width="12" height="12"></i> B1: X 400–500</div>
+                <div style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map-pin" width="12" height="12"></i> C1: X 550–700</div>
+                <div style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map-pin" width="12" height="12"></i> D1: X 700–900</div>
+                <div style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map-pin" width="12" height="12"></i> E1: X 400–500 (lower)</div>
               </div>
             </div>
           </div>
@@ -179,16 +181,16 @@
       <!-- ─── Tab 3: Circulation ─────────────────────────────── -->
       <div class="tab-panel" id="tab-circulation">
         <div class="section-header">
-          <h2>📊 Circulation Tracking</h2>
+          <h2 style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="activity"></i> Circulation Tracking</h2>
           <div style="display: flex; gap: 0.5rem;">
             <button class="btn btn-secondary btn-sm" onclick="LibrarianDashboard.sortCirculation('duration')">
-              ⏱️ Sort by Duration
+              <span style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="clock" width="16" height="16"></i> Sort by Duration</span>
             </button>
             <button class="btn btn-secondary btn-sm" onclick="LibrarianDashboard.sortCirculation('date')">
-              📅 Sort by Date
+              <span style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="calendar" width="16" height="16"></i> Sort by Date</span>
             </button>
             <button class="btn btn-secondary btn-sm" onclick="LibrarianDashboard.sortCirculation('user')">
-              👤 Sort by User
+              <span style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="user" width="16" height="16"></i> Sort by User</span>
             </button>
           </div>
         </div>
@@ -264,5 +266,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="/static/js/app.js"></script>
   <script src="/static/js/librarian.js"></script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>

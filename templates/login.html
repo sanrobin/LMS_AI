@@ -6,13 +6,15 @@
   <meta name="description" content="Library Management System — Sign in to access the library catalog, borrow books, and discover new reads with AI assistance.">
   <title>Sign In — Library Management System</title>
   <link rel="stylesheet" href="/static/css/styles.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
   <div class="auth-page">
     <div class="glass-card auth-card">
       <!-- Logo -->
       <div class="logo">
-        <div class="logo-icon-large">📚</div>
+        <div class="logo-icon-large"><i data-lucide="book-open" width="48" height="48"></i></div>
         <h1>Welcome Back</h1>
         <p class="subtitle">Sign in to your library account</p>
       </div>
@@ -59,6 +61,7 @@
 
   <script src="/static/js/app.js"></script>
   <script>
+    lucide.createIcons();
     document.addEventListener('DOMContentLoaded', () => {
       // If already logged in, redirect to dashboard
       App.getUser().then(user => {

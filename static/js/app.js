@@ -108,15 +108,16 @@ const App = {
     }
 
     const icons = {
-      success: '✓',
-      error: '✕',
-      info: 'ℹ',
+      success: '<i data-lucide="check-circle" width="16" height="16"></i>',
+      error: '<i data-lucide="x-circle" width="16" height="16"></i>',
+      info: '<i data-lucide="info" width="16" height="16"></i>',
     };
 
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    toast.innerHTML = `<span>${icons[type] || 'ℹ'}</span><span>${message}</span>`;
+    toast.innerHTML = `<span style="display:flex; align-items:center;">${icons[type] || icons.info}</span><span>${message}</span>`;
     container.appendChild(toast);
+    if (window.lucide) lucide.createIcons({ root: toast });
 
     setTimeout(() => {
       toast.style.opacity = '0';
@@ -155,12 +156,12 @@ const App = {
    */
   statusBadge(status, isOverdue = false) {
     if (isOverdue) {
-      return '<span class="badge badge-overdue">⚠ Overdue</span>';
+      return '<span class="badge badge-overdue" style="display:inline-flex; align-items:center; gap:0.25rem;"><i data-lucide="alert-triangle" width="14" height="14"></i> Overdue</span>';
     }
     if (status === 'available') {
-      return '<span class="badge badge-available">● Available</span>';
+      return '<span class="badge badge-available" style="display:inline-flex; align-items:center; gap:0.25rem;"><i data-lucide="check-circle" width="14" height="14"></i> Available</span>';
     }
-    return '<span class="badge badge-borrowed">● Borrowed</span>';
+    return '<span class="badge badge-borrowed" style="display:inline-flex; align-items:center; gap:0.25rem;"><i data-lucide="book-open" width="14" height="14"></i> Borrowed</span>';
   },
 
   /**

@@ -33,7 +33,7 @@ const Chat = {
 
     // Add welcome message
     this.addMessage(
-      '👋 Hi! I\'m your AI Library Assistant. Ask me for book recommendations, ' +
+      '<i data-lucide="bot" width="16" height="16" style="vertical-align:middle;"></i> Hi! I\'m your AI Library Assistant. Ask me for book recommendations, ' +
       'topic explanations, or help finding resources in our library!',
       'assistant'
     );
@@ -88,14 +88,14 @@ const Chat = {
 
         // Show sources if available
         if (data.sources && data.sources.length > 0) {
-          const sourceText = '📎 Sources: ' + data.sources.join(', ');
+          const sourceText = '<i data-lucide="paperclip" width="14" height="14" style="vertical-align:middle;"></i> Sources: ' + data.sources.join(', ');
           this.addMessage(sourceText, 'assistant');
         }
       }
     } catch (err) {
       this.setTyping(false);
       this.addMessage(
-        '⚠️ Sorry, I encountered an error. Please try again in a moment.',
+        '<i data-lucide="alert-triangle" width="16" height="16" style="vertical-align:middle;"></i> Sorry, I encountered an error. Please try again in a moment.',
         'assistant'
       );
     } finally {
@@ -126,6 +126,8 @@ const Chat = {
 
     // Auto-scroll to bottom
     container.scrollTop = container.scrollHeight;
+
+    if (window.lucide) lucide.createIcons({ root: msg });
   },
 
   /**

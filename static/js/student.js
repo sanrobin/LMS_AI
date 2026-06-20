@@ -53,7 +53,8 @@ const StudentDashboard = {
   updateNavbar() {
     const userBadge = document.getElementById('user-badge');
     if (userBadge && this.user) {
-      userBadge.textContent = `📚 ${this.user.username}`;
+      userBadge.innerHTML = `<span style="display:flex; align-items:center; gap:0.25rem;"><i data-lucide="user" width="16" height="16"></i> ${this.escapeHtml(this.user.username)}</span>`;
+      if (window.lucide) lucide.createIcons({ root: userBadge });
     }
   },
 
@@ -101,10 +102,11 @@ const StudentDashboard = {
     if (!books || books.length === 0) {
       grid.innerHTML = `
         <div class="empty-state" style="grid-column: 1 / -1;">
-          <div class="icon">📚</div>
+          <div class="icon"><i data-lucide="search" width="48" height="48"></i></div>
           <p>No books found. Try a different search term.</p>
         </div>
       `;
+      if (window.lucide) lucide.createIcons({ root: grid });
       return;
     }
 
@@ -120,13 +122,15 @@ const StudentDashboard = {
           ${book.isbn ? `<span class="book-isbn">${book.isbn}</span>` : ''}
         </div>
         ${book.status === 'available' ? `
-          <button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 0.75rem;"
+          <button class="btn btn-primary btn-sm" style="width: 100%; margin-top: 0.75rem; display:flex; align-items:center; justify-content:center; gap:0.25rem;"
             onclick="event.stopPropagation(); StudentDashboard.borrowBook(${book.id})">
-            📖 Borrow
+            <i data-lucide="book-open" width="14" height="14"></i> Borrow
           </button>
         ` : ''}
       </div>
     `).join('');
+
+    if (window.lucide) lucide.createIcons({ root: grid });
   },
 
   /**
@@ -153,11 +157,13 @@ const StudentDashboard = {
             Held for <span class="${App.getDurationClass(book.days_held)}">${book.days_held} days</span>
           </div>
         </div>
-        <button class="btn btn-secondary btn-sm" onclick="StudentDashboard.returnBook(${book.book_id})">
-          ↩ Return
+        <button class="btn btn-secondary btn-sm" onclick="StudentDashboard.returnBook(${book.book_id})" style="display:flex; align-items:center; gap:0.25rem;">
+          <i data-lucide="corner-down-left" width="14" height="14"></i> Return
         </button>
       </div>
     `).join('');
+
+    if (window.lucide) lucide.createIcons({ root: container });
   },
 
   /**

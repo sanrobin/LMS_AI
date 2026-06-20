@@ -6,13 +6,15 @@
   <meta name="description" content="Create a new account to access the Library Management System.">
   <title>Register — Library Management System</title>
   <link rel="stylesheet" href="/static/css/styles.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
   <div class="auth-page">
     <div class="glass-card auth-card">
       <!-- Logo -->
       <div class="logo">
-        <div class="logo-icon-large">✨</div>
+        <div class="logo-icon-large"><i data-lucide="sparkles" width="48" height="48"></i></div>
         <h1>Create Account</h1>
         <p class="subtitle">Join the library and start exploring</p>
       </div>
@@ -52,8 +54,8 @@
         <div class="form-group">
           <label class="form-label" for="reg-role">Account Type</label>
           <select id="reg-role" class="form-select">
-            <option value="student">📚 Student</option>
-            <option value="librarian">🔑 Librarian</option>
+            <option value="student">Student</option>
+            <option value="librarian">Librarian</option>
           </select>
         </div>
 
@@ -70,6 +72,7 @@
 
   <script src="/static/js/app.js"></script>
   <script>
+    lucide.createIcons();
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('register-form');
       const errorEl = document.getElementById('register-error');

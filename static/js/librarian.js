@@ -60,7 +60,8 @@ const LibrarianDashboard = {
   updateNavbar() {
     const userBadge = document.getElementById('user-badge');
     if (userBadge && this.user) {
-      userBadge.textContent = `🔑 ${this.user.username}`;
+      userBadge.innerHTML = `<span style="display:flex; align-items:center; gap:0.25rem;"><i data-lucide="key" width="16" height="16"></i> ${this.escapeHtml(this.user.username)}</span>`;
+      if (window.lucide) lucide.createIcons({ root: userBadge });
     }
   },
 
@@ -117,15 +118,17 @@ const LibrarianDashboard = {
         <td>
           <div style="display: flex; gap: 0.3rem;">
             <button class="btn btn-secondary btn-sm" onclick="LibrarianDashboard.editBook(${book.id})" title="Edit">
-              ✏️
+              <i data-lucide="pencil" width="14" height="14"></i>
             </button>
             <button class="btn btn-danger btn-sm" onclick="LibrarianDashboard.deleteBook(${book.id})" title="Delete">
-              🗑️
+              <i data-lucide="trash-2" width="14" height="14"></i>
             </button>
           </div>
         </td>
       </tr>
     `).join('');
+    
+    if (window.lucide) lucide.createIcons({ root: tbody });
   },
 
   /**
@@ -259,11 +262,12 @@ const LibrarianDashboard = {
     } else {
       const icon = L.divIcon({
         className: 'custom-pin',
-        html: `<span>📍</span>`,
+        html: `<span><i data-lucide="map-pin" width="24" height="24" stroke="currentColor" fill="var(--bg-secondary)"></i></span>`,
         iconSize: [28, 28],
         iconAnchor: [14, 28],
       });
       this.locationMarker = L.marker([y, x], { icon }).addTo(this.map);
+      setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 10);
     }
   },
 
@@ -369,6 +373,8 @@ const LibrarianDashboard = {
         </tr>
       `;
     }).join('');
+
+    if (window.lucide) lucide.createIcons({ root: tbody });
   },
 
   sortCirculation(sortBy) {
