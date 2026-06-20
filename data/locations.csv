@@ -1,0 +1,21 @@
+book_id,x_coord,y_coord,shelf_name
+1,120.0,150.0,Shelf A1 - Computer Science
+2,120.0,200.0,Shelf A1 - Computer Science
+3,120.0,250.0,Shelf A1 - Computer Science
+4,120.0,300.0,Shelf A1 - Computer Science
+5,280.0,150.0,Shelf A2 - Programming
+6,280.0,200.0,Shelf A2 - Programming
+7,280.0,250.0,Shelf A2 - Programming
+8,280.0,300.0,Shelf A2 - Programming
+9,450.0,150.0,Shelf B1 - Databases & Networks
+10,450.0,200.0,Shelf B1 - Databases & Networks
+11,450.0,250.0,Shelf B1 - Databases & Networks
+12,450.0,300.0,Shelf B1 - Databases & Networks
+13,620.0,150.0,Shelf C1 - Mathematics
+14,620.0,200.0,Shelf C1 - Mathematics
+15,620.0,250.0,Shelf C1 - Mathematics
+16,780.0,150.0,Shelf D1 - Literature
+17,780.0,200.0,Shelf D1 - Literature
+18,780.0,250.0,Shelf D1 - Literature
+19,780.0,300.0,Shelf D1 - Literature
+20,450,500,Shelf E1 - Non-Fiction

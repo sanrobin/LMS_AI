@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Student Dashboard — Search books, view the library map, borrow titles, and chat with the AI Library Assistant.">
+  <title>Student Dashboard — Library Management System</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <!-- Leaflet.js CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <div class="dashboard">
+    <!-- ─── Navbar ───────────────────────────────────────────── -->
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <div class="logo-icon">📚</div>
+        <span>Library</span>
+      </div>
+      <div class="navbar-links">
+        <span class="user-badge" id="user-badge">Loading...</span>
+        <button onclick="App.logout()" title="Sign Out">🚪 Logout</button>
+      </div>
+    </nav>
+
+    <!-- ─── Main Content ─────────────────────────────────────── -->
+    <div class="dashboard-content">
+      <!-- Header -->
+      <div class="dashboard-header">
+        <h1>📖 Student Dashboard</h1>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="glass-card stat-card">
+          <div class="stat-icon blue">📚</div>
+          <div>
+            <div class="stat-value" id="stat-total">—</div>
+            <div class="stat-label">Total Books</div>
+          </div>
+        </div>
+        <div class="glass-card stat-card">
+          <div class="stat-icon teal">✅</div>
+          <div>
+            <div class="stat-value" id="stat-available">—</div>
+            <div class="stat-label">Available</div>
+          </div>
+        </div>
+        <div class="glass-card stat-card">
+          <div class="stat-icon violet">📖</div>
+          <div>
+            <div class="stat-value" id="stat-my-borrowed">—</div>
+            <div class="stat-label">My Borrowed</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two Column Layout: Search + Map -->
+      <div class="two-col" style="margin-bottom: 1.5rem;">
+        <!-- Left: Search + Books -->
+        <div>
+          <div class="section-header">
+            <h2>🔍 Find Books</h2>
+          </div>
+
+          <!-- Search Bar -->
+          <div class="search-container" style="max-width: 100%; margin-bottom: 1rem;">
+            <span class="search-icon">🔍</span>
+            <input
+              type="text"
+              id="search-input"
+              class="form-input"
+              placeholder="Search by title, author, or ISBN..."
+            >
+          </div>
+
+          <!-- Book Grid -->
+          <div class="book-grid" id="book-grid" style="max-height: 500px; overflow-y: auto; padding-right: 0.5rem;">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Right: Map -->
+        <div>
+          <div class="section-header">
+            <h2>🗺️ Library Map</h2>
+            <button class="btn btn-secondary btn-sm" onclick="LibraryMap.resetView()">
+              ↻ Reset View
+            </button>
+          </div>
+          <div class="map-container">
+            <div id="library-map"></div>
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">
+            💡 Click a book card to see its location on the map
+          </p>
+        </div>
+      </div>
+
+      <!-- My Borrowed Books -->
+      <div style="margin-bottom: 1.5rem;">
+        <div class="section-header">
+          <h2>📖 My Borrowed Books</h2>
+        </div>
+        <div id="my-books-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ─── AI Chat Panel (Slide-out) ────────────────────────── -->
+    <div class="chat-panel" id="chat-panel">
+      <div class="chat-header">
+        <h3>🤖 AI Library Assistant</h3>
+        <button class="modal-close" id="chat-close">✕</button>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <!-- Messages populated by JS -->
+        <div class="typing-indicator" id="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      </div>
+      <div class="chat-input-area">
+        <input
+          type="text"
+          id="chat-input"
+          class="form-input"
+          placeholder="Ask me about books..."
+          autocomplete="off"
+        >
+        <button class="btn btn-primary" id="chat-send">Send</button>
+      </div>
+    </div>
+
+    <!-- Chat FAB -->
+    <button class="chat-fab" id="chat-fab" title="AI Library Assistant">
+      🤖
+    </button>
+  </div>
+
+  <!-- ─── Scripts ──────────────────────────────────────────────── -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/map.js"></script>
+  <script src="/static/js/chat.js"></script>
+  <script src="/static/js/student.js"></script>
+</body>
+</html>

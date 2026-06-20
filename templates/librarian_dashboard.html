@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Librarian Dashboard — Manage books, locations, and track circulation in the Library Management System.">
+  <title>Librarian Dashboard — Library Management System</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <div class="dashboard">
+    <!-- ─── Navbar ───────────────────────────────────────────── -->
+    <nav class="navbar">
+      <div class="navbar-brand">
+        <div class="logo-icon">📚</div>
+        <span>Library</span>
+      </div>
+      <div class="navbar-links">
+        <span class="user-badge" id="user-badge">Loading...</span>
+        <button onclick="App.logout()" title="Sign Out">🚪 Logout</button>
+      </div>
+    </nav>
+
+    <!-- ─── Main Content ─────────────────────────────────────── -->
+    <div class="dashboard-content">
+      <!-- Header -->
+      <div class="dashboard-header">
+        <h1>🔑 Librarian Dashboard</h1>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="glass-card stat-card">
+          <div class="stat-icon blue">📚</div>
+          <div>
+            <div class="stat-value" id="stat-total-books">—</div>
+            <div class="stat-label">Total Books</div>
+          </div>
+        </div>
+        <div class="glass-card stat-card">
+          <div class="stat-icon teal">✅</div>
+          <div>
+            <div class="stat-value" id="stat-available-books">—</div>
+            <div class="stat-label">Available</div>
+          </div>
+        </div>
+        <div class="glass-card stat-card">
+          <div class="stat-icon violet">📖</div>
+          <div>
+            <div class="stat-value" id="stat-borrowed-books">—</div>
+            <div class="stat-label">Borrowed</div>
+          </div>
+        </div>
+        <div class="glass-card stat-card">
+          <div class="stat-icon coral">⚠️</div>
+          <div>
+            <div class="stat-value" id="stat-overdue">—</div>
+            <div class="stat-label">Overdue</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="books">📚 Book Management</button>
+        <button class="tab-btn" data-tab="locations">🗺️ Map Management</button>
+        <button class="tab-btn" data-tab="circulation">📊 Circulation</button>
+      </div>
+
+      <!-- ─── Tab 1: Book Management ─────────────────────────── -->
+      <div class="tab-panel active" id="tab-books">
+        <div class="section-header">
+          <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input
+              type="text"
+              id="lib-search-input"
+              class="form-input"
+              placeholder="Search books..."
+            >
+          </div>
+          <button class="btn btn-primary" onclick="LibrarianDashboard.openBookModal()">
+            + Add Book
+          </button>
+        </div>
+
+        <div class="glass-card" style="padding: 0; overflow: hidden;">
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Author</th>
+                  <th>ISBN</th>
+                  <th>Status</th>
+                  <th>Borrowed Date</th>
+                  <th style="width: 100px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="books-tbody">
+                <tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Tab 2: Map Management ──────────────────────────── -->
+      <div class="tab-panel" id="tab-locations">
+        <div class="two-col">
+          <!-- Location Form -->
+          <div class="glass-card">
+            <h3 style="margin-bottom: 1.25rem;">📍 Update Book Location</h3>
+            <form id="location-form">
+              <div class="form-group">
+                <label class="form-label" for="loc-book-select">Select Book</label>
+                <select id="loc-book-select" class="form-select" onchange="LibrarianDashboard.onBookSelectChange()" required>
+                  <option value="">Select a book...</option>
+                </select>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                  <label class="form-label" for="loc-x">X Coordinate</label>
+                  <input type="number" id="loc-x" class="form-input" placeholder="e.g. 120" min="0" step="1" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="loc-y">Y Coordinate</label>
+                  <input type="number" id="loc-y" class="form-input" placeholder="e.g. 200" min="0" step="1" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="loc-shelf">Shelf Name</label>
+                <input type="text" id="loc-shelf" class="form-input" placeholder="e.g. Shelf A1 - Computer Science" required>
+              </div>
+
+              <button type="submit" class="btn btn-primary" style="width: 100%;">
+                💾 Save Location
+              </button>
+            </form>
+          </div>
+
+          <!-- Help / Info -->
+          <div class="glass-card">
+            <h3 style="margin-bottom: 1rem;">ℹ️ Coordinate Guide</h3>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
+              The library floorplan uses a pixel-based coordinate system:
+            </p>
+            <ul style="color: var(--text-secondary); font-size: 0.85rem; padding-left: 1.25rem; list-style: disc;">
+              <li style="margin-bottom: 0.5rem;"><strong>X</strong> — Horizontal position (0 = left, 1000 = right)</li>
+              <li style="margin-bottom: 0.5rem;"><strong>Y</strong> — Vertical position (0 = top, 700 = bottom)</li>
+              <li style="margin-bottom: 0.5rem;"><strong>Shelf Name</strong> — Human-readable location label</li>
+            </ul>
+
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(67, 97, 238, 0.08); border-radius: var(--radius-md); border: 1px solid rgba(67, 97, 238, 0.15);">
+              <p style="font-size: 0.85rem; color: var(--accent-blue);">
+                💡 <strong>Tip:</strong> If a book already has a location, selecting it will auto-fill the coordinates. Update and save to change.
+              </p>
+            </div>
+
+            <div style="margin-top: 1rem;">
+              <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-primary);">Shelf Layout Reference</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
+                <div>📍 A1-A2: X 100–300</div>
+                <div>📍 B1: X 400–500</div>
+                <div>📍 C1: X 550–700</div>
+                <div>📍 D1: X 700–900</div>
+                <div>📍 E1: X 400–500 (lower)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── Tab 3: Circulation ─────────────────────────────── -->
+      <div class="tab-panel" id="tab-circulation">
+        <div class="section-header">
+          <h2>📊 Circulation Tracking</h2>
+          <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-secondary btn-sm" onclick="LibrarianDashboard.sortCirculation('duration')">
+              ⏱️ Sort by Duration
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="LibrarianDashboard.sortCirculation('date')">
+              📅 Sort by Date
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="LibrarianDashboard.sortCirculation('user')">
+              👤 Sort by User
+            </button>
+          </div>
+        </div>
+
+        <div class="glass-card" style="padding: 0; overflow: hidden;">
+          <div class="data-table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th onclick="LibrarianDashboard.sortCirculation('duration')">Book Title</th>
+                  <th onclick="LibrarianDashboard.sortCirculation('user')">Student</th>
+                  <th onclick="LibrarianDashboard.sortCirculation('date')">Borrowed</th>
+                  <th>Returned</th>
+                  <th onclick="LibrarianDashboard.sortCirculation('duration')" class="sorted">Duration ↕</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="circ-tbody">
+                <tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">Loading...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div style="display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.8rem;">
+          <span><span class="duration-normal">●</span> Under 7 days</span>
+          <span><span class="duration-warning">●</span> 7–14 days</span>
+          <span><span class="duration-overdue">●</span> Over 14 days (overdue)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Book Modal ───────────────────────────────────────────── -->
+  <div class="modal-overlay" id="book-modal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 id="modal-title">Add New Book</h2>
+        <button class="modal-close" onclick="LibrarianDashboard.closeBookModal()">✕</button>
+      </div>
+
+      <form id="book-form">
+        <div class="form-group">
+          <label class="form-label" for="book-title">Title</label>
+          <input type="text" id="book-title" class="form-input" placeholder="Book title" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="book-author">Author</label>
+          <input type="text" id="book-author" class="form-input" placeholder="Author name" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="book-isbn">ISBN (optional)</label>
+          <input type="text" id="book-isbn" class="form-input" placeholder="13-digit ISBN" maxlength="13">
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="LibrarianDashboard.closeBookModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="book-submit-btn">Add Book</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── Scripts ──────────────────────────────────────────────── -->
+  <script src="/static/js/app.js"></script>
+  <script src="/static/js/librarian.js"></script>
+</body>
+</html>

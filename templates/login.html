@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Library Management System — Sign in to access the library catalog, borrow books, and discover new reads with AI assistance.">
+  <title>Sign In — Library Management System</title>
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="glass-card auth-card">
+      <!-- Logo -->
+      <div class="logo">
+        <div class="logo-icon-large">📚</div>
+        <h1>Welcome Back</h1>
+        <p class="subtitle">Sign in to your library account</p>
+      </div>
+
+      <!-- Error alert -->
+      <div class="alert-error" id="login-error"></div>
+
+      <!-- Login Form -->
+      <form id="login-form" autocomplete="on">
+        <div class="form-group">
+          <label class="form-label" for="login-username">Username</label>
+          <input
+            type="text"
+            id="login-username"
+            class="form-input"
+            placeholder="Enter your username"
+            autocomplete="username"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">Password</label>
+          <input
+            type="password"
+            id="login-password"
+            class="form-input"
+            placeholder="Enter your password"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="login-submit">
+          Sign In
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Don't have an account? <a href="/register">Create one</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // If already logged in, redirect to dashboard
+      App.getUser().then(user => {
+        if (user) {
+          window.location.href = user.role === 'librarian' ? '/librarian' : '/dashboard';
+        }
+      });
+
+      const form = document.getElementById('login-form');
+      const errorEl = document.getElementById('login-error');
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorEl.classList.remove('show');
+
+        const username = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value;
+
+        if (!username || !password) {
+          errorEl.textContent = 'Please enter both username and password.';
+          errorEl.classList.add('show');
+          return;
+        }
+
+        const submitBtn = document.getElementById('login-submit');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing in...';
+
+        try {
+          const data = await fetch('/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({ username, password }),
+          });
+
+          const result = await data.json();
+
+          if (!data.ok) {
+            throw new Error(result.detail || 'Login failed.');
+          }
+
+          // Redirect based on role
+          const role = result.user?.role;
+          window.location.href = role === 'librarian' ? '/librarian' : '/dashboard';
+        } catch (err) {
+          errorEl.textContent = err.message;
+          errorEl.classList.add('show');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign In';
+        }
+      });
+    });
+  </script>
+</body>
+</html>
