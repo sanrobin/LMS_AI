@@ -874,6 +874,11 @@ a:hover {
   border: 1px solid var(--glass-border) !important;
 }
 
+/* ── Leaflet Map Background Override ─────────────────────────── */
+.leaflet-container {
+  background: var(--bg-primary) !important;
+}
+
 .leaflet-popup-content {
   margin: 0.75rem 1rem !important;
   font-family: 'Inter', sans-serif !important;
