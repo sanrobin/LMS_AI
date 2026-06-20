@@ -1,8 +1,8 @@
-# 📚 Library Management System
+# Library Management System
 
 A lightweight, full-stack Library Management System designed for **Raspberry Pi** deployment. Features AI-powered book discovery, interactive floor-plan maps, and role-based dashboards.
 
-## ✨ Features
+## Features
 
 | Feature | Description |
 |---------|-------------|
@@ -13,14 +13,14 @@ A lightweight, full-stack Library Management System designed for **Raspberry Pi*
 | **Circulation Tracking** | Borrow/return flow with duration sorting and overdue highlighting |
 | **Dark Glassmorphism UI** | Premium dark theme with micro-animations |
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Backend:** Python 3.10+, FastAPI, SQLAlchemy, SQLite
 - **Frontend:** Vanilla HTML5/CSS3/JavaScript, Leaflet.js
 - **AI:** Google Gemini API, Google Custom Search Engine API
 - **Auth:** JWT (PyJWT) + bcrypt password hashing
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Clone and install dependencies
 
@@ -50,7 +50,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 Then open **http://localhost:8000** in your browser.
 
-## 👤 Default Accounts
+## Default Accounts
 
 | Role | Username | Password |
 |------|----------|----------|
@@ -58,7 +58,7 @@ Then open **http://localhost:8000** in your browser.
 | Student | `student1` | `pass123` |
 | Student | `student2` | `pass123` |
 
-## 🗺️ Project Structure
+## Project Structure
 
 ```
 LMS_AI/
@@ -92,7 +92,7 @@ LMS_AI/
 └── .env.example
 ```
 
-## 🍓 Raspberry Pi Deployment
+## Raspberry Pi Deployment
 
 ```bash
 # Install on Pi
@@ -125,14 +125,10 @@ Restart=always
 WantedBy=multi-user.target
 ```
 
-## 🔑 API Keys Setup
+## API Keys Setup
 
 The AI Assistant requires:
 1. **Gemini API Key** — Get from [Google AI Studio](https://aistudio.google.com/)
 2. **Custom Search API Key + Engine ID** — Get from [Google Cloud Console](https://console.cloud.google.com/)
 
 Add them to your `.env` file. The system works without them (AI features show a setup message).
-
-## 📝 License
-
-MIT
