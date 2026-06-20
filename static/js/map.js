@@ -63,23 +63,24 @@ const LibraryMap = {
     locations.forEach(loc => {
       const icon = L.divIcon({
         className: 'custom-pin',
-        html: `<span>${loc.genre.charAt(0).toUpperCase()}</span>`,
+        html: `<span></span>`,
         iconSize: [28, 28],
         iconAnchor: [14, 28],
         popupAnchor: [0, -30],
+        tooltipAnchor: [0, -30],
       });
 
       // Note: Leaflet uses [lat, lng] which maps to [y, x] in pixel coords
       const marker = L.marker([loc.y_coord, loc.x_coord], { icon })
         .addTo(this.map);
 
-      // Popup with genre info (will be enriched when a book is selected)
-      marker.bindPopup(`
+      // Tooltip with genre info (shows on hover)
+      marker.bindTooltip(`
         <div style="min-width: 150px;">
           <strong>Genre: ${loc.genre}</strong><br>
           <span style="color: #9a9ab0; font-size: 0.8rem;">📍 ${loc.shelf_name}</span>
         </div>
-      `);
+      `, { direction: 'top', className: 'custom-tooltip' });
 
       this.markers[loc.genre] = marker;
     });
@@ -112,8 +113,8 @@ const LibraryMap = {
       if (pin) pin.classList.add('highlighted-pin');
     }
 
-    // Update popup content with book details
-    marker.setPopupContent(`
+    // Update tooltip content with book details
+    marker.setTooltipContent(`
       <div style="min-width: 180px;">
         <strong style="color: #4361ee; font-size: 0.95rem;">${bookTitle}</strong><br>
         <span style="color: #9a9ab0; font-size: 0.8rem;">by ${bookAuthor}</span><br>
@@ -125,7 +126,7 @@ const LibraryMap = {
 
     // Pan and zoom to the marker
     this.map.setView(marker.getLatLng(), 1, { animate: true });
-    marker.openPopup();
+    marker.openTooltip();
   },
 
   /**
