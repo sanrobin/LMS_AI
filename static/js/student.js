@@ -85,6 +85,7 @@ const StudentDashboard = {
     try {
       this.myBooks = await App.api('/api/my-books');
       this.renderMyBooks();
+      this.updateStats();
     } catch (err) {
       console.error('Failed to load my books:', err);
     }
