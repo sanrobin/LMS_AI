@@ -1,7 +1,7 @@
 genre,x_coord,y_coord,shelf_name
-Computer Science,120.0,200.0,Shelf A1 - Computer Science
+Computer Science,307.0,387.0,Shelf A1 - Computer Science
 Programming,280.0,200.0,Shelf A2 - Programming
 Databases & Networks,450.0,200.0,Shelf B1 - Databases & Networks
 Mathematics,620.0,200.0,Shelf C1 - Mathematics
 Literature,780.0,200.0,Shelf D1 - Literature
-Non-Fiction,450,500,Shelf E1 - Non-Fiction
+Non-Fiction,450.0,500.0,Shelf E1 - Non-Fiction

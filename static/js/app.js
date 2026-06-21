@@ -38,10 +38,25 @@ const App = {
         return { success: true };
       }
 
-      const data = await response.json();
+      const isJson = response.headers.get('content-type')?.includes('application/json');
+      let data;
+      if (isJson) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        if (!response.ok) {
+          throw new Error(text || `Request failed (${response.status})`);
+        }
+        return text;
+      }
 
       if (!response.ok) {
-        throw new Error(data.detail || `Request failed (${response.status})`);
+        let errMsg = data?.detail;
+        if (data && Array.isArray(data.detail)) {
+          // Format FastAPI/Pydantic validation errors nicely
+          errMsg = data.detail.map(e => e.msg).join('; ');
+        }
+        throw new Error(errMsg || `Request failed (${response.status})`);
       }
 
       return data;

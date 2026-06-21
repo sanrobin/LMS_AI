@@ -12,7 +12,10 @@ const LibrarianDashboard = {
   currentTab: 'books',
   editingBookId: null,
   map: null,
-  locationMarker: null,
+  locationMarker: null, // Generic draft marker
+  allLocations: [],
+  locationMarkers: {},
+  selectedGenre: null,
 
   /**
    * Initialize the librarian dashboard.
@@ -36,6 +39,7 @@ const LibrarianDashboard = {
 
     // Initialize map
     this.initMap();
+    await this.loadLocations();
 
     // Bind book form
     const bookForm = document.getElementById('book-form');
@@ -79,6 +83,13 @@ const LibrarianDashboard = {
     document.querySelectorAll('.tab-panel').forEach(panel => {
       panel.classList.toggle('active', panel.id === `tab-${tabName}`);
     });
+
+    // Fix map rendering issue when container becomes visible
+    if (tabName === 'locations' && this.map) {
+      setTimeout(() => {
+        this.map.invalidateSize();
+      }, 10);
+    }
   },
 
   // ── Books Management ────────────────────────────────────────
@@ -225,6 +236,43 @@ const LibrarianDashboard = {
 
   // ── Location Management ─────────────────────────────────────
 
+  async loadLocations() {
+    try {
+      this.allLocations = await App.api('/api/locations');
+      this.renderLocationMarkers();
+    } catch (err) {
+      console.error('Failed to load locations', err);
+    }
+  },
+
+  renderLocationMarkers() {
+    // Clear existing
+    for (const genre in this.locationMarkers) {
+      this.map.removeLayer(this.locationMarkers[genre]);
+    }
+    this.locationMarkers = {};
+
+    this.allLocations.forEach(loc => {
+      const icon = L.divIcon({
+        className: 'custom-pin',
+        html: `<span><i data-lucide="map-pin" width="24" height="24" stroke="currentColor" fill="var(--bg-secondary)"></i></span>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 28],
+      });
+
+      const marker = L.marker([loc.y_coord, loc.x_coord], { icon }).addTo(this.map);
+      marker.bindTooltip(loc.genre, { direction: 'top', className: 'custom-tooltip' });
+
+      marker.on('click', () => {
+        this.selectLocation(loc.genre);
+      });
+
+      this.locationMarkers[loc.genre] = marker;
+    });
+
+    setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 10);
+  },
+
   initMap() {
     const imgWidth = 1000;
     const imgHeight = 700;
@@ -251,7 +299,14 @@ const LibrarianDashboard = {
       if (x >= 0 && x <= imgWidth && y >= 0 && y <= imgHeight) {
         document.getElementById('loc-x').value = x;
         document.getElementById('loc-y').value = y;
-        this.updateLocationMarker(x, y);
+        
+        // If we have a selected genre, move its marker
+        if (this.selectedGenre && this.locationMarkers[this.selectedGenre]) {
+          this.locationMarkers[this.selectedGenre].setLatLng([y, x]);
+        } else {
+          // Normal draft marker
+          this.updateLocationMarker(x, y);
+        }
       }
     });
   },
@@ -271,25 +326,60 @@ const LibrarianDashboard = {
     }
   },
 
+  selectLocation(genre) {
+    const loc = this.allLocations.find(l => l.genre === genre);
+    if (!loc) return;
+
+    this.selectedGenre = genre;
+
+    // Fill form
+    document.getElementById('loc-genre').value = loc.genre;
+    document.getElementById('loc-x').value = loc.x_coord;
+    document.getElementById('loc-y').value = loc.y_coord;
+    document.getElementById('loc-shelf').value = loc.shelf_name;
+
+    this.highlightMarker(genre);
+  },
+
+  highlightMarker(genre) {
+    // Reset all markers
+    for (const g in this.locationMarkers) {
+      const el = this.locationMarkers[g].getElement();
+      if (el) el.classList.remove('highlighted-pin');
+    }
+    // Highlight selected
+    if (genre && this.locationMarkers[genre]) {
+      const el = this.locationMarkers[genre].getElement();
+      if (el) el.classList.add('highlighted-pin');
+    }
+    // Also hide the generic draft marker if it exists
+    if (this.locationMarker) {
+      this.map.removeLayer(this.locationMarker);
+      this.locationMarker = null;
+    }
+  },
+
   /**
    * Load existing location for entered genre.
    */
   async onGenreChange() {
     const genre = document.getElementById('loc-genre').value.trim();
-    if (!genre) return;
+    if (!genre) {
+      this.selectedGenre = null;
+      this.highlightMarker(null);
+      return;
+    }
 
-    try {
-      const loc = await App.api(`/api/locations/${encodeURIComponent(genre)}`);
-      if (loc) {
-        document.getElementById('loc-x').value = loc.x_coord;
-        document.getElementById('loc-y').value = loc.y_coord;
-        document.getElementById('loc-shelf').value = loc.shelf_name;
-        this.updateLocationMarker(loc.x_coord, loc.y_coord);
-        this.map.setView([loc.y_coord, loc.x_coord], 1, { animate: true });
-      }
-    } catch {
-      // No existing location — keep coordinates as is, let user set new ones
-      // We don't clear X/Y here because the user might have clicked the map first
+    const loc = this.allLocations.find(l => l.genre === genre);
+    if (loc) {
+      this.selectLocation(genre);
+      this.map.setView([loc.y_coord, loc.x_coord], 1, { animate: true });
+    } else {
+      this.selectedGenre = null;
+      this.highlightMarker(null);
+      const x = document.getElementById('loc-x').value;
+      const y = document.getElementById('loc-y').value;
+      if (x && y) this.updateLocationMarker(parseFloat(x), parseFloat(y));
     }
   },
 
@@ -322,6 +412,12 @@ const LibrarianDashboard = {
 
       // Reset form
       document.getElementById('location-form').reset();
+      this.selectedGenre = null;
+      if (this.locationMarker) {
+        this.map.removeLayer(this.locationMarker);
+        this.locationMarker = null;
+      }
+      await this.loadLocations();
     } catch (err) {
       // Error toast handled by App.api
     }

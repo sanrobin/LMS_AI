@@ -13,6 +13,11 @@ from app.schemas import CirculationRecord, BorrowedBookResponse
 from app.auth.dependencies import get_current_user, require_role
 from app.config import MAX_BORROW_LIMIT, OVERDUE_DAYS
 
+def _ensure_aware(dt: datetime) -> datetime:
+    if dt and dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
+
 router = APIRouter(prefix="/api", tags=["Circulation"])
 
 
@@ -102,7 +107,7 @@ def return_book(
 
     if history:
         history.return_date = now
-        history.duration_days = (now - history.borrow_date).days
+        history.duration_days = (now - _ensure_aware(history.borrow_date)).days
 
     # Reset book status
     book.status = BookStatus.available
@@ -137,7 +142,7 @@ def get_circulation(
         if rec.return_date:
             duration = rec.duration_days or 0
         else:
-            duration = (now - rec.borrow_date).days
+            duration = (now - _ensure_aware(rec.borrow_date)).days
 
         is_overdue = (not rec.return_date) and (duration > OVERDUE_DAYS)
 
@@ -179,7 +184,7 @@ def get_my_books(
     now = datetime.now(timezone.utc)
     result = []
     for book in books:
-        days_held = (now - book.borrowed_date).days if book.borrowed_date else 0
+        days_held = (now - _ensure_aware(book.borrowed_date)).days if book.borrowed_date else 0
         result.append(BorrowedBookResponse(
             book_id=book.id,
             title=book.title,
