@@ -126,6 +126,7 @@ const App = {
       success: '<i data-lucide="check-circle" width="16" height="16"></i>',
       error: '<i data-lucide="x-circle" width="16" height="16"></i>',
       info: '<i data-lucide="info" width="16" height="16"></i>',
+      warning: '<i data-lucide="alert-triangle" width="16" height="16"></i>',
     };
 
     const toast = document.createElement('div');
@@ -209,4 +210,48 @@ const App = {
       // Line breaks
       .replace(/\n/g, '<br>');
   },
+
+  // ── Idle Timer ────────────────────────────────────────────────
+  
+  /**
+   * Monitor user inactivity and auto-logout after 20 minutes.
+   */
+  initIdleTimer() {
+    if (window.location.pathname === '/login' || window.location.pathname === '/register' || window.location.pathname === '/') {
+      return;
+    }
+
+    const WARNING_TIME = 18 * 60 * 1000; // 18 minutes
+    const LOGOUT_TIME = 20 * 60 * 1000;  // 20 minutes
+    
+    let lastActiveTime = Date.now();
+    let warningShown = false;
+
+    // Throttle the reset to avoid triggering on every single mousemove pixel
+    const resetTimer = this.debounce(() => {
+      lastActiveTime = Date.now();
+      warningShown = false;
+    }, 1000);
+
+    ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(event => {
+      window.addEventListener(event, resetTimer, { passive: true });
+    });
+
+    setInterval(() => {
+      const idleTime = Date.now() - lastActiveTime;
+
+      if (idleTime >= LOGOUT_TIME) {
+        this.logout();
+      } else if (idleTime >= WARNING_TIME && !warningShown) {
+        this.toast('You will be logged out in 2 minutes due to inactivity.', 'warning', 120000);
+        warningShown = true;
+      }
+    }, 10000); // Check every 10 seconds
+  }
 };
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof App.initIdleTimer === 'function') {
+    App.initIdleTimer();
+  }
+});

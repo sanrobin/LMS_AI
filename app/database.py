@@ -3,7 +3,7 @@ SQLite database engine and session management.
 Uses SQLAlchemy with synchronous SQLite — ideal for Raspberry Pi's single-disk I/O.
 """
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 from app.config import DATABASE_URL, DATA_DIR
@@ -18,6 +18,14 @@ engine = create_engine(
     connect_args={"check_same_thread": False},
     echo=False,  # Set True for SQL debug logging
 )
+
+# ── Enable SQLite WAL Mode ──────────────────────────────────────────
+@event.listens_for(engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA journal_mode=WAL")
+    cursor.execute("PRAGMA synchronous=NORMAL")
+    cursor.close()
 
 # ── Session factory ─────────────────────────────────────────────────
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

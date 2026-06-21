@@ -113,69 +113,27 @@
 
       <!-- ─── Tab 2: Map Management ──────────────────────────── -->
       <div class="tab-panel" id="tab-locations">
-        <div class="two-col">
-          <!-- Location Form -->
-          <div class="glass-card">
-            <h3 style="margin-bottom: 1.25rem;" class="flex-center-gap"><i data-lucide="map-pin"></i> Update Book Location</h3>
-            <form id="location-form">
-              <div class="form-group">
-                <label class="form-label" for="loc-genre">Genre</label>
-                <input type="text" id="loc-genre" class="form-input" placeholder="e.g. Computer Science" onchange="LibrarianDashboard.onGenreChange()" required>
-              </div>
+        <div class="section-header" style="margin-bottom: 1.5rem;">
+          <h2 class="flex-center-gap"><i data-lucide="map"></i> Location Management</h2>
+          <button class="btn btn-primary" onclick="LibrarianDashboard.openLocationModal()">
+            <span class="flex-center-gap"><i data-lucide="plus" width="18" height="18"></i> Add New Location</span>
+          </button>
+        </div>
 
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group">
-                  <label class="form-label" for="loc-x">X Coordinate</label>
-                  <input type="number" id="loc-x" class="form-input" placeholder="e.g. 120" min="0" step="1" required>
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="loc-y">Y Coordinate</label>
-                  <input type="number" id="loc-y" class="form-input" placeholder="e.g. 200" min="0" step="1" required>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label class="form-label" for="loc-shelf">Shelf Name</label>
-                <input type="text" id="loc-shelf" class="form-input" placeholder="e.g. Shelf A1 - Computer Science" required>
-              </div>
-
-              <button type="submit" class="btn btn-primary w-full flex-center-justify">
-                <i data-lucide="save" width="16" height="16"></i> Save Location
-              </button>
-            </form>
-          </div>
-
-          <!-- Help / Info / Map -->
-          <div class="glass-card">
-            <h3 style="margin-bottom: 1rem;" class="flex-center-gap"><i data-lucide="map"></i> Interactive Map</h3>
-            <div id="librarian-map" style="width: 100%; height: 350px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1rem;"></div>
-            
-            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1rem;">
-              Click anywhere on the map to set the X and Y coordinates.
-            </p>
-            <ul style="color: var(--text-secondary); font-size: 0.85rem; padding-left: 1.25rem; list-style: disc;">
-              <li style="margin-bottom: 0.5rem;"><strong>X</strong> — Horizontal position (0 = left, 1000 = right)</li>
-              <li style="margin-bottom: 0.5rem;"><strong>Y</strong> — Vertical position (0 = top, 700 = bottom)</li>
-              <li style="margin-bottom: 0.5rem;"><strong>Shelf Name</strong> — Human-readable location label</li>
-            </ul>
-
-            <div style="margin-top: 1rem; padding: 1rem; background: rgba(67, 97, 238, 0.08); border-radius: var(--radius-md); border: 1px solid rgba(67, 97, 238, 0.15);">
-              <p style="font-size: 0.85rem; color: var(--accent-blue); display: flex; align-items: center; gap: 0.25rem;">
-                <i data-lucide="lightbulb" width="16" height="16"></i> <strong>Tip:</strong> Enter an existing genre to load its location, or click the map to place a new pin.
-              </p>
-            </div>
-
-            <div style="margin-top: 1rem;">
-              <h4 style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-primary);">Shelf Layout Reference</h4>
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.8rem; color: var(--text-muted);">
-                <div style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map-pin" width="12" height="12"></i> A1-A2: X 100–300</div>
-                <div style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map-pin" width="12" height="12"></i> B1: X 400–500</div>
-                <div style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map-pin" width="12" height="12"></i> C1: X 550–700</div>
-                <div style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map-pin" width="12" height="12"></i> D1: X 700–900</div>
-                <div style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="map-pin" width="12" height="12"></i> E1: X 400–500 (lower)</div>
-              </div>
-            </div>
-          </div>
+        <div class="glass-card glass-static" style="overflow-x: auto; padding: 0;">
+          <table class="table">
+            <thead>
+              <tr>
+                <th style="width: 25%;">Genre</th>
+                <th style="width: 35%;">Shelf Name</th>
+                <th style="width: 20%;">Coordinates (X, Y)</th>
+                <th style="width: 20%; text-align: right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="locations-tbody">
+              <!-- Location rows rendered by JS -->
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -222,6 +180,59 @@
           <span><span class="duration-warning">●</span> 7–14 days</span>
           <span><span class="duration-overdue">●</span> Over 14 days (overdue)</span>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Location Modal ───────────────────────────────────────── -->
+  <div class="modal-overlay" id="location-modal">
+    <div class="modal" style="max-width: 900px; width: 90vw;">
+      <div class="modal-header">
+        <h2 id="loc-modal-title">Add/Edit Location</h2>
+        <button class="modal-close" onclick="LibrarianDashboard.closeLocationModal()">✕</button>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; padding-top: 1rem;">
+        
+        <!-- Left: Map -->
+        <div style="flex: 2; min-width: 300px;">
+          <div id="librarian-map" style="width: 100%; height: 400px; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 0.5rem;"></div>
+          <p style="color: var(--text-secondary); font-size: 0.85rem;" class="flex-center-gap">
+            <i data-lucide="info" width="14" height="14"></i> Drag the pin or click anywhere on the map to set coordinates.
+          </p>
+        </div>
+
+        <!-- Right: Form -->
+        <div style="flex: 1; min-width: 250px;">
+          <form id="location-form">
+            <div class="form-group">
+              <label class="form-label" for="loc-genre">Genre</label>
+              <input type="text" id="loc-genre" class="form-input" placeholder="e.g. Computer Science" required>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label" for="loc-x">X Coord</label>
+                <input type="number" id="loc-x" class="form-input" placeholder="e.g. 120" min="0" step="1" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="loc-y">Y Coord</label>
+                <input type="number" id="loc-y" class="form-input" placeholder="e.g. 200" min="0" step="1" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="loc-shelf">Shelf Name</label>
+              <input type="text" id="loc-shelf" class="form-input" placeholder="e.g. Shelf A1 - CS" required>
+            </div>
+
+            <div style="margin-top: 1.5rem; display: flex; gap: 0.5rem; justify-content: flex-end;">
+              <button type="button" class="btn btn-secondary" onclick="LibrarianDashboard.closeLocationModal()">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="loc-submit-btn">Save</button>
+            </div>
+          </form>
+        </div>
+
       </div>
     </div>
   </div>

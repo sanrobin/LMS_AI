@@ -239,38 +239,117 @@ const LibrarianDashboard = {
   async loadLocations() {
     try {
       this.allLocations = await App.api('/api/locations');
-      this.renderLocationMarkers();
+      this.renderLocationsTable();
     } catch (err) {
       console.error('Failed to load locations', err);
     }
   },
 
-  renderLocationMarkers() {
-    // Clear existing
-    for (const genre in this.locationMarkers) {
-      this.map.removeLayer(this.locationMarkers[genre]);
+  renderLocationsTable() {
+    const tbody = document.getElementById('locations-tbody');
+    if (!tbody) return;
+
+    if (!this.allLocations || this.allLocations.length === 0) {
+      tbody.innerHTML = `
+        <tr><td colspan="4" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+          No locations mapped yet
+        </td></tr>
+      `;
+      return;
     }
-    this.locationMarkers = {};
 
-    this.allLocations.forEach(loc => {
-      const icon = L.divIcon({
-        className: 'custom-pin',
-        html: `<span><i data-lucide="map-pin" width="24" height="24" stroke="currentColor" fill="var(--bg-secondary)"></i></span>`,
-        iconSize: [28, 28],
-        iconAnchor: [14, 28],
-      });
+    tbody.innerHTML = this.allLocations.map(loc => `
+      <tr>
+        <td style="font-weight: 600; color: var(--text-primary);">${this.escapeHtml(loc.genre)}</td>
+        <td>${this.escapeHtml(loc.shelf_name)}</td>
+        <td><code style="font-size: 0.85rem; color: var(--text-muted);">X: ${loc.x_coord}, Y: ${loc.y_coord}</code></td>
+        <td style="text-align: right;">
+          <button class="btn btn-secondary btn-sm" onclick="LibrarianDashboard.openLocationModal('${this.escapeHtml(loc.genre)}')" title="Edit on Map">
+            <i data-lucide="map" width="14" height="14"></i> Edit
+          </button>
+        </td>
+      </tr>
+    `).join('');
+    
+    if (window.lucide) lucide.createIcons({ root: tbody });
+  },
 
-      const marker = L.marker([loc.y_coord, loc.x_coord], { icon }).addTo(this.map);
-      marker.bindTooltip(loc.genre, { direction: 'top', className: 'custom-tooltip' });
+  openLocationModal(genre = null) {
+    this.selectedGenre = genre;
+    const modal = document.getElementById('location-modal');
+    const title = document.getElementById('loc-modal-title');
+    
+    const genreInput = document.getElementById('loc-genre');
+    const xInput = document.getElementById('loc-x');
+    const yInput = document.getElementById('loc-y');
+    const shelfInput = document.getElementById('loc-shelf');
 
-      marker.on('click', () => {
-        this.selectLocation(loc.genre);
-      });
+    if (this.locationMarker) {
+      this.map.removeLayer(this.locationMarker);
+      this.locationMarker = null;
+    }
 
-      this.locationMarkers[loc.genre] = marker;
-    });
+    let initialX = 500;
+    let initialY = 350;
 
-    setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 10);
+    if (genre) {
+      const loc = this.allLocations.find(l => l.genre === genre);
+      title.textContent = 'Edit Location';
+      genreInput.value = loc.genre;
+      genreInput.readOnly = true; // Prevent renaming for editing existing
+      xInput.value = loc.x_coord;
+      yInput.value = loc.y_coord;
+      shelfInput.value = loc.shelf_name;
+      initialX = loc.x_coord;
+      initialY = loc.y_coord;
+    } else {
+      title.textContent = 'Add New Location';
+      genreInput.value = '';
+      genreInput.readOnly = false;
+      xInput.value = initialX;
+      yInput.value = initialY;
+      shelfInput.value = '';
+    }
+
+    if (modal) modal.classList.add('active');
+
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+        this.map.setView([initialY, initialX], 1);
+        
+        const icon = L.divIcon({
+          className: 'highlighted-pin',
+          html: `<span><i data-lucide="map-pin" width="24" height="24" stroke="currentColor" fill="var(--bg-secondary)"></i></span>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 28],
+        });
+        
+        this.locationMarker = L.marker([initialY, initialX], { icon, draggable: true }).addTo(this.map);
+        
+        this.locationMarker.on('dragend', (e) => {
+          const pos = e.target.getLatLng();
+          let x = Math.round(pos.lng);
+          let y = Math.round(pos.lat);
+          
+          x = Math.max(0, Math.min(x, 1000));
+          y = Math.max(0, Math.min(y, 700));
+          
+          e.target.setLatLng([y, x]); 
+          
+          xInput.value = x;
+          yInput.value = y;
+        });
+
+        if (window.lucide) lucide.createIcons();
+      }
+    }, 10);
+  },
+
+  closeLocationModal() {
+    const modal = document.getElementById('location-modal');
+    if (modal) modal.classList.remove('active');
+    this.selectedGenre = null;
   },
 
   initMap() {
@@ -290,97 +369,19 @@ const LibrarianDashboard = {
     this.map.fitBounds(bounds);
     this.map.setView([imgHeight / 2, imgWidth / 2], 0);
 
-    // Handle clicks to set coordinates
     this.map.on('click', (e) => {
       const y = Math.round(e.latlng.lat);
       const x = Math.round(e.latlng.lng);
       
-      // Ensure within bounds
       if (x >= 0 && x <= imgWidth && y >= 0 && y <= imgHeight) {
         document.getElementById('loc-x').value = x;
         document.getElementById('loc-y').value = y;
         
-        // If we have a selected genre, move its marker
-        if (this.selectedGenre && this.locationMarkers[this.selectedGenre]) {
-          this.locationMarkers[this.selectedGenre].setLatLng([y, x]);
-        } else {
-          // Normal draft marker
-          this.updateLocationMarker(x, y);
+        if (this.locationMarker) {
+          this.locationMarker.setLatLng([y, x]);
         }
       }
     });
-  },
-
-  updateLocationMarker(x, y) {
-    if (this.locationMarker) {
-      this.locationMarker.setLatLng([y, x]);
-    } else {
-      const icon = L.divIcon({
-        className: 'custom-pin',
-        html: `<span><i data-lucide="map-pin" width="24" height="24" stroke="currentColor" fill="var(--bg-secondary)"></i></span>`,
-        iconSize: [28, 28],
-        iconAnchor: [14, 28],
-      });
-      this.locationMarker = L.marker([y, x], { icon }).addTo(this.map);
-      setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 10);
-    }
-  },
-
-  selectLocation(genre) {
-    const loc = this.allLocations.find(l => l.genre === genre);
-    if (!loc) return;
-
-    this.selectedGenre = genre;
-
-    // Fill form
-    document.getElementById('loc-genre').value = loc.genre;
-    document.getElementById('loc-x').value = loc.x_coord;
-    document.getElementById('loc-y').value = loc.y_coord;
-    document.getElementById('loc-shelf').value = loc.shelf_name;
-
-    this.highlightMarker(genre);
-  },
-
-  highlightMarker(genre) {
-    // Reset all markers
-    for (const g in this.locationMarkers) {
-      const el = this.locationMarkers[g].getElement();
-      if (el) el.classList.remove('highlighted-pin');
-    }
-    // Highlight selected
-    if (genre && this.locationMarkers[genre]) {
-      const el = this.locationMarkers[genre].getElement();
-      if (el) el.classList.add('highlighted-pin');
-    }
-    // Also hide the generic draft marker if it exists
-    if (this.locationMarker) {
-      this.map.removeLayer(this.locationMarker);
-      this.locationMarker = null;
-    }
-  },
-
-  /**
-   * Load existing location for entered genre.
-   */
-  async onGenreChange() {
-    const genre = document.getElementById('loc-genre').value.trim();
-    if (!genre) {
-      this.selectedGenre = null;
-      this.highlightMarker(null);
-      return;
-    }
-
-    const loc = this.allLocations.find(l => l.genre === genre);
-    if (loc) {
-      this.selectLocation(genre);
-      this.map.setView([loc.y_coord, loc.x_coord], 1, { animate: true });
-    } else {
-      this.selectedGenre = null;
-      this.highlightMarker(null);
-      const x = document.getElementById('loc-x').value;
-      const y = document.getElementById('loc-y').value;
-      if (x && y) this.updateLocationMarker(parseFloat(x), parseFloat(y));
-    }
   },
 
   async handleLocationSubmit(e) {
@@ -408,15 +409,9 @@ const LibrarianDashboard = {
         method: 'PUT',
         body: JSON.stringify(data),
       });
-      App.toast('Location updated successfully!', 'success');
+      App.toast('Location saved successfully!', 'success');
 
-      // Reset form
-      document.getElementById('location-form').reset();
-      this.selectedGenre = null;
-      if (this.locationMarker) {
-        this.map.removeLayer(this.locationMarker);
-        this.locationMarker = null;
-      }
+      this.closeLocationModal();
       await this.loadLocations();
     } catch (err) {
       // Error toast handled by App.api
