@@ -2,6 +2,7 @@
 Authentication routes — register, login, logout, and current user profile.
 """
 
+import os
 from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.orm import Session
 
@@ -46,8 +47,8 @@ def register(data: UserRegister, response: Response, db: Session = Depends(get_d
         key="access_token",
         value=token,
         httponly=True,
-        samesite="lax",
-        max_age=86400,  # 24 hours
+        samesite="strict",
+        secure=os.getenv("ENVIRONMENT") == "production",
     )
 
     return TokenResponse(
@@ -75,8 +76,8 @@ def login(data: UserLogin, response: Response, db: Session = Depends(get_db)):
         key="access_token",
         value=token,
         httponly=True,
-        samesite="lax",
-        max_age=86400,
+        samesite="strict",
+        secure=os.getenv("ENVIRONMENT") == "production",
     )
 
     return TokenResponse(
@@ -88,7 +89,12 @@ def login(data: UserLogin, response: Response, db: Session = Depends(get_db)):
 @router.post("/logout")
 def logout(response: Response):
     """Clear the authentication cookie."""
-    response.delete_cookie("access_token")
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,
+        samesite="strict",
+        secure=os.getenv("ENVIRONMENT") == "production",
+    )
     return {"message": "Logged out successfully."}
 
 

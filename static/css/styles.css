@@ -162,12 +162,12 @@ a:hover {
 .navbar {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 2rem;
-  background: rgba(10, 10, 20, 0.85);
+  background: #0a0a14;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--glass-border);
@@ -711,6 +711,8 @@ a:hover {
   max-width: 1280px;
   margin: 0 auto;
   padding: 1.5rem 2rem 3rem;
+  position: relative;
+  z-index: 0;
 }
 
 .dashboard-header {
@@ -841,6 +843,11 @@ a:hover {
   overflow: hidden;
   border: 1px solid var(--glass-border);
   background: var(--bg-secondary);
+  isolation: isolate;
+  z-index: 1;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
 }
 
 #library-map {
@@ -862,6 +869,10 @@ a:hover {
   transform: rotate(-45deg);
   box-shadow: 0 2px 8px rgba(67, 97, 238, 0.4);
   transition: all var(--transition-fast);
+  pointer-events: auto;
+}
+.custom-pin * {
+  pointer-events: none;
 }
 
 .custom-pin:hover {
@@ -912,6 +923,13 @@ a:hover {
   margin: 0.75rem 1rem !important;
   font-family: 'Inter', sans-serif !important;
   font-size: 0.85rem !important;
+}
+
+.leaflet-control-zoom {
+  position: absolute !important;
+  top: 24px !important;
+  left: 24px !important;
+  z-index: 1000 !important;
 }
 
 
@@ -1171,6 +1189,9 @@ a:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
+}
+.two-col > div {
+  min-width: 0;
 }
 
 

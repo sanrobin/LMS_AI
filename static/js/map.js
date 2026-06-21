@@ -63,8 +63,8 @@ const LibraryMap = {
     locations.forEach(loc => {
       // Create custom div icon
       const icon = L.divIcon({
-        className: 'custom-pin',
-        html: `<span><i data-lucide="map-pin" stroke="currentColor" fill="var(--bg-secondary)" width="24" height="24"></i></span>`,
+        className: '',
+        html: `<div class="custom-pin"><span><i data-lucide="map-pin" stroke="currentColor" fill="var(--bg-secondary)" width="24" height="24"></i></span></div>`,
         iconSize: [28, 28],
         iconAnchor: [14, 28],
         tooltipAnchor: [0, -28],

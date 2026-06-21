@@ -319,8 +319,8 @@ const LibrarianDashboard = {
         this.map.setView([initialY, initialX], 1);
         
         const icon = L.divIcon({
-          className: 'highlighted-pin',
-          html: `<span><i data-lucide="map-pin" width="24" height="24" stroke="currentColor" fill="var(--bg-secondary)"></i></span>`,
+          className: '',
+          html: `<div class="custom-pin highlighted-pin"><span><i data-lucide="map-pin" width="24" height="24" stroke="currentColor" fill="var(--bg-secondary)"></i></span></div>`,
           iconSize: [28, 28],
           iconAnchor: [14, 28],
         });
