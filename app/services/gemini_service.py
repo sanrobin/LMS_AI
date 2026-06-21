@@ -5,7 +5,7 @@ Sends structured prompts with library catalog context and optional
 web search results to produce helpful book recommendations.
 """
 
-import google.generativeai as genai
+from google import genai
 from app.config import GEMINI_API_KEY
 
 # ── System prompt ───────────────────────────────────────────────────
@@ -46,8 +46,8 @@ def get_gemini_response(
         return ("⚠️ The AI Assistant is not configured yet. "
                 "Please ask the librarian to set up the Gemini API key in the .env file.")
 
-    # Configure the SDK
-    genai.configure(api_key=GEMINI_API_KEY)
+    # Create client with API key
+    client = genai.Client(api_key=GEMINI_API_KEY)
 
     # Build catalog context
     catalog_text = _format_catalog(available_books)
@@ -74,13 +74,14 @@ def get_gemini_response(
 
     full_prompt = "\n".join(prompt_parts)
 
-    # Call Gemini
-    model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash",
-        system_instruction=SYSTEM_PROMPT,
+    # Call Gemini via the new Client API
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=full_prompt,
+        config=genai.types.GenerateContentConfig(
+            system_instruction=SYSTEM_PROMPT,
+        ),
     )
-
-    response = model.generate_content(full_prompt)
     return response.text
 
 

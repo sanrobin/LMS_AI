@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Create a new account to access the Library Management System.">
   <title>Register — Library Management System</title>
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
   <link rel="stylesheet" href="/static/css/styles.css">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -72,8 +73,8 @@
 
   <script src="/static/js/app.js"></script>
   <script>
-    lucide.createIcons();
     document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
       const form = document.getElementById('register-form');
       const errorEl = document.getElementById('register-error');
 

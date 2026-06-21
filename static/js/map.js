@@ -77,7 +77,7 @@ const LibraryMap = {
       marker.bindTooltip(`
         <div style="text-align: center; font-family: var(--font-main);">
           <strong>Genre: ${loc.genre}</strong><br>
-          <span style="color: #9a9ab0; font-size: 0.8rem; display:flex; align-items:center; justify-content:center; gap:0.25rem;"><i data-lucide="map-pin" width="12" height="12"></i> ${loc.shelf_name}</span>
+          <span style="color: var(--text-secondary); font-size: 0.8rem;" class="flex-center-justify"><i data-lucide="map-pin" width="12" height="12"></i> ${loc.shelf_name}</span>
         </div>
       `, { direction: 'top', className: 'custom-tooltip', opacity: 0.9 });
 
@@ -117,9 +117,9 @@ const LibraryMap = {
     // Update tooltip content with book details
     marker.setTooltipContent(`
       <div style="min-width: 180px;">
-        <strong style="color: #4361ee; font-size: 0.95rem;">${bookTitle}</strong><br>
-        <span style="color: #9a9ab0; font-size: 0.8rem;">by ${bookAuthor}</span><br>
-        <span style="color: #06d6a0; font-size: 0.8rem; margin-top: 4px; display: inline-block;">
+        <strong style="color: var(--accent-blue); font-size: 0.95rem;">${bookTitle}</strong><br>
+        <span style="color: var(--text-secondary); font-size: 0.8rem;">by ${bookAuthor}</span><br>
+        <span style="color: var(--status-available); font-size: 0.8rem; margin-top: 4px; display: inline-block;">
           📍 ${shelfName || 'Unknown shelf'}
         </span>
       </div>

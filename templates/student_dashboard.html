@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Student Dashboard — Search books, view the library map, borrow titles, and chat with the AI Library Assistant.">
   <title>Student Dashboard — Library Management System</title>
+  <link rel="icon" type="image/svg+xml" href="/static/img/favicon.svg">
   <link rel="stylesheet" href="/static/css/styles.css">
   <!-- Leaflet.js CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -21,7 +22,7 @@
       </div>
       <div class="navbar-links">
         <span class="user-badge" id="user-badge">Loading...</span>
-        <button onclick="App.logout()" title="Sign Out" style="display: flex; align-items: center; gap: 0.25rem;"><i data-lucide="log-out" width="16" height="16"></i> Logout</button>
+        <button onclick="App.logout()" title="Sign Out" class="flex-center-gap-sm"><i data-lucide="log-out" width="16" height="16"></i> Logout</button>
       </div>
     </nav>
 
@@ -29,7 +30,7 @@
     <div class="dashboard-content">
       <!-- Header -->
       <div class="dashboard-header">
-        <h1 style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="layout-dashboard"></i> Student Dashboard</h1>
+        <h1 class="flex-center-gap"><i data-lucide="layout-dashboard"></i> Student Dashboard</h1>
       </div>
 
       <!-- Stats Row -->
@@ -62,7 +63,7 @@
         <!-- Left: Search + Books -->
         <div>
           <div class="section-header">
-            <h2 style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="search"></i> Find Books</h2>
+            <h2 class="flex-center-gap"><i data-lucide="search"></i> Find Books</h2>
           </div>
 
           <!-- Search Bar -->
@@ -85,15 +86,15 @@
         <!-- Right: Map -->
         <div>
           <div class="section-header">
-            <h2 style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="map"></i> Library Map</h2>
-            <button class="btn btn-secondary btn-sm" onclick="LibraryMap.resetView()" style="display: flex; align-items: center; gap: 0.25rem;">
+            <h2 class="flex-center-gap"><i data-lucide="map"></i> Library Map</h2>
+            <button class="btn btn-secondary btn-sm flex-center-gap-sm" onclick="LibraryMap.resetView()">
               <i data-lucide="refresh-cw" width="16" height="16"></i> Reset View
             </button>
           </div>
           <div class="map-container">
             <div id="library-map"></div>
           </div>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; display: flex; align-items: center; gap: 0.25rem;">
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;" class="flex-center-gap-sm">
             <i data-lucide="lightbulb" width="16" height="16"></i> Click a book card to see its location on the map
           </p>
         </div>
@@ -102,7 +103,7 @@
       <!-- My Borrowed Books -->
       <div style="margin-bottom: 1.5rem;">
         <div class="section-header">
-          <h2 style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="book-open"></i> My Borrowed Books</h2>
+          <h2 class="flex-center-gap"><i data-lucide="book-open"></i> My Borrowed Books</h2>
         </div>
         <div id="my-books-list">
           <!-- Populated by JS -->
@@ -113,7 +114,7 @@
     <!-- ─── AI Chat Panel (Slide-out) ────────────────────────── -->
     <div class="chat-panel" id="chat-panel">
       <div class="chat-header">
-        <h3 style="display: flex; align-items: center; gap: 0.5rem;"><i data-lucide="bot"></i> AI Library Assistant</h3>
+        <h3 class="flex-center-gap"><i data-lucide="bot"></i> AI Library Assistant</h3>
         <button class="modal-close" id="chat-close">✕</button>
       </div>
       <div class="chat-messages" id="chat-messages">

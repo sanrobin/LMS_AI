@@ -100,7 +100,7 @@ const LibrarianDashboard = {
 
     if (!this.books || this.books.length === 0) {
       tbody.innerHTML = `
-        <tr><td colspan="6" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+        <tr><td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
           No books found
         </td></tr>
       `;

@@ -49,8 +49,8 @@ def borrow_book(
             detail=f"You have reached the maximum borrow limit of {MAX_BORROW_LIMIT} books.",
         )
 
-    # Borrow the book (use naive UTC — SQLite doesn't store timezone info)
-    now = datetime.utcnow()
+    # Borrow the book
+    now = datetime.now(timezone.utc)
     book.status = BookStatus.borrowed
     book.borrowed_by = current_user.id
     book.borrowed_date = now
@@ -67,7 +67,7 @@ def borrow_book(
     return {
         "message": f"Successfully borrowed '{book.title}'.",
         "book_id": book.id,
-        "due_date": (now.replace(tzinfo=None).__str__()[:10]),
+        "due_date": (now + timedelta(days=OVERDUE_DAYS)).strftime("%Y-%m-%d"),
     }
 
 
@@ -91,7 +91,7 @@ def return_book(
             detail="You have not borrowed this book.",
         )
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     # Find the active history record and close it
     history = db.query(BorrowHistory).filter(
@@ -129,7 +129,7 @@ def get_circulation(
     Shows all active and past borrow records, sortable by duration.
     """
     records = db.query(BorrowHistory).all()
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
 
     result = []
     for rec in records:
@@ -176,7 +176,7 @@ def get_my_books(
         Book.status == BookStatus.borrowed,
     ).all()
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     result = []
     for book in books:
         days_held = (now - book.borrowed_date).days if book.borrowed_date else 0
